@@ -5,6 +5,8 @@ import store from "./store/store"
 import Login from "./pages/user/Login"
 import Home from "./pages/Home/Home"
 import ProductPage from "./pages/product/Product"
+import SingleProduct from "./pages/single product/SingleProduct"
+
 
 
 
@@ -22,6 +24,7 @@ function App() {
           <Route path="/" element={<Home />} />
 
           <Route path="/products" element={<ProductPage />} />
+          <Route path="/products/:id" element={<SingleProduct />} />
 
         </Routes>
       </BrowserRouter>
