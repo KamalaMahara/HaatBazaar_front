@@ -2,9 +2,10 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { IProduct, IProducts } from "../pages/product/types/types";
 import { Status } from "../globals/types/types";
 import type { AppDispatch } from "./store";
-import API from "../http";
+
 import { setStatus } from "./authSlice";
 import type { RootState } from "./store";
+import { API } from "../http";
 
 
 

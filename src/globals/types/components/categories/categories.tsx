@@ -45,7 +45,7 @@ const Categories: React.FC = () => {
               <img
                 src={cat.img}
                 alt={cat.name}
-                className="w-full h-full object-cover grayscale brightness-50 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-110 transition-all duration-700 ease-in-out"
+                className="w-full h-full object-cover brightness-100 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-110 transition-all duration-700 ease-in-out"
               />
 
               {/* Overlay Gradient */}

@@ -1,23 +1,25 @@
-
-
 import { useEffect, useState } from 'react';
 import { Search, ShoppingCart, Menu, X } from 'lucide-react';
 import { Link } from 'react-router';
-import { useAppSelector } from '../../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { fetchCartItems } from '../../../../store/cartSlice';
+import logo from "../../../../assets/logo.png";
+
 
 
 const Navbar = () => {
-  const reduxToken = useAppSelector((store) => store.auth.user.token)
-  const localStorageToken = localStorage.getItem("tokenHoYo")
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false)
+  const reduxToken = useAppSelector((store) => store.auth.user.token);
+  const { items } = useAppSelector((store) => store.cart)
+  const localStorageToken = localStorage.getItem("tokenHoYo");
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
-    setIsLoggedIn(!!reduxToken || !!localStorageToken) // This will set isLoggedIn to true if either token exists, otherwise false
-    // if(reduxToken && localStorageToken){
-    //   setIsLoggedIn(true)
-    // }
-  }, [])
-
+    setIsLoggedIn(!!reduxToken || !!localStorageToken);
+    if (isLoggedIn) {
+      dispatch(fetchCartItems())
+    }
+  }, [reduxToken, localStorageToken]);
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -25,7 +27,6 @@ const Navbar = () => {
     { name: 'Home', href: '/' },
     { name: 'Products', href: '/products' },
     { name: 'Categories', href: '/categories' }
-
   ];
 
   return (
@@ -35,10 +36,11 @@ const Navbar = () => {
 
           {/* Logo Section */}
           <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-            <div className="w-10 h-10 bg-[#F59E0B] rounded-lg flex items-center justify-center font-bold text-xl text-[#111827]">
-              S
-            </div>
-            <span className="text-2xl font-bold tracking-tight">STORE<span className="text-[#F59E0B]">.</span></span>
+
+            <span className="text-2xl font-bold tracking-tight">
+              <img src={logo} alt="Project Logo" className="h-22 w-auto object-contain" />
+
+            </span>
           </div>
 
           {/* Desktop Navigation */}
@@ -65,38 +67,39 @@ const Navbar = () => {
               <Search className="absolute left-3 top-2.5 h-4 w-4 text-gray-400 group-focus-within:text-[#F59E0B]" />
             </div>
 
-            <div className="flex items-center space-x-4">
+            {/* Auth Section */}
+            <div className="flex items-center gap-3 pl-6">
+              {isLoggedIn ? (
+                <>
+                  {/* Cart with border on the right */}
+                  <div className="flex items-center space-x-4 border-r border-amber-700 pr-4 mr-6">
+                    <div className="relative cursor-pointer hover:text-[#F59E0B] transition-colors">
+                      <Link to='/my-cart'>
+                        <ShoppingCart className="h-6 w-6" />
+                        <span className="absolute -top-2 -right-2 bg-[#F59E0B] text-[#111827] text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                          {items.length > 0 ? items.length : 0}
+                        </span>
+                      </Link>
+                    </div>
+                  </div>
 
-
-              <div className="relative cursor-pointer hover:text-[#F59E0B] transition-colors">
-                <ShoppingCart className="h-6 w-6" />
-                <span className="absolute -top-2 -right-2 bg-[#F59E0B] text-[#111827] text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-                  3
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 border-l border-gray-700 pl-6">
-              {
-                isLoggedIn ? (
-                  <Link to='/logout'><button className="text-sm font-medium hover:text-[#F59E0B]">Logout</button></Link>
-                ) :
-                  (
-                    <>
-                      <Link to="/register">
-                        <button className="bg-[#F59E0B] text-[#111827] px-4 py-2 rounded-md text-sm font-bold hover:bg-opacity-90 transition-all">
-                          Register
-                        </button></Link>
-
-                      <Link to='/login'><button className="text-sm font-medium hover:text-[#F59E0B]">Login</button></Link>
-                    </>
-
-                  )
-
-              }
-
-
-
+                  {/* Logout button */}
+                  <Link to='/logout'>
+                    <button className="text-sm font-medium hover:text-[#F59E0B]">Logout</button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link to="/register">
+                    <button className="bg-[#F59E0B] text-[#111827] px-4 py-2 rounded-md text-sm font-bold hover:bg-opacity-90 transition-all">
+                      Register
+                    </button>
+                  </Link>
+                  <Link to='/login'>
+                    <button className="text-sm font-medium hover:text-[#F59E0B]">Login</button>
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 

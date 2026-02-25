@@ -1,5 +1,7 @@
 import React from 'react';
-import { ArrowUpRight, Play, ShoppingCart } from 'lucide-react';
+import { ArrowUpRight, ShoppingCart } from 'lucide-react';
+import { Link } from 'react-router';
+
 
 const Hero: React.FC = () => {
   return (
@@ -14,25 +16,27 @@ const Hero: React.FC = () => {
         <div className="lg:col-span-5 z-10 flex flex-col justify-center h-full">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 w-fit mb-8 backdrop-blur-md">
             <div className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse" />
-            <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400">Live: New Drops available</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400">Elegance in Every Selection.</span>
           </div>
 
           <h1 className="text-[clamp(3rem,8vw,5.5rem)] font-black leading-[0.85] tracking-tighter mb-8 uppercase italic">
-            LIMITLESS <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F59E0B] to-amber-200">CURATION.</span>
+            SHOP YOUR <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#F59E0B] to-amber-200">FAVORITES.</span>
           </h1>
 
           <p className="max-w-md text-gray-400 text-lg mb-10 leading-tight font-light">
-            An ecosystem of high-end tech, timeless fashion, and premium beauty. Experience commerce, redefined for 2026.
+            From daily essentials to unique treasures, find everything you need in one vibrant destination.Experience commerce, redefined for 2026.
           </p>
 
           <div className="flex gap-4">
-            <button className="h-16 px-10 bg-[#F59E0B] text-[#111827] font-black rounded-full flex items-center gap-3 hover:scale-105 transition-transform active:scale-95">
-              GET STARTED <ShoppingCart size={20} />
-            </button>
-            <button className="h-16 w-16 flex items-center justify-center rounded-full border border-white/10 hover:bg-white/5 transition-colors">
-              <Play size={20} className="fill-white" />
-            </button>
+            <Link
+              to="/login"
+              className="h-16 px-10 bg-[#F59E0B] text-[#111827] font-black rounded-full flex items-center gap-3 hover:scale-105 transition-transform active:scale-95"
+            >
+              BUY NOW <ShoppingCart size={20} />
+            </Link>
+
+
           </div>
         </div>
 

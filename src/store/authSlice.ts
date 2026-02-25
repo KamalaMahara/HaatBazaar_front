@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { Status } from "../globals/types/types";
 import axios from "axios";
 import type { AppDispatch } from "./store";
-import API from "../http";
+import { API } from "../http";
 
 
 

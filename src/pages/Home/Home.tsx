@@ -1,5 +1,7 @@
 import Categories from "../../globals/types/components/categories/categories"
+import Footer from "../../globals/types/components/footer/footer"
 import Navbar from "../../globals/types/components/Navbar/navbar"
+import ProductPage from "../product/Product"
 
 import Feature from "./feature"
 
@@ -14,6 +16,8 @@ const Home = () => {
       <ModernDarkHero />
       <Feature />
       <Categories />
+      <ProductPage />
+      <Footer />
 
 
 

@@ -4,6 +4,7 @@ import { ShoppingBag, ShieldCheck, Truck, RefreshCcw, Plus, Minus, Heart } from 
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchSingleProduct } from '../../store/productSlice';
 import { useParams } from 'react-router';
+import { addToCart } from '../../store/cartSlice';
 
 const SingleProduct = () => {
   const { id } = useParams()
@@ -19,6 +20,12 @@ const SingleProduct = () => {
       console.log(id)
     }
   }, [])
+
+  const handleAddToCart = () => {
+    if (id) {
+      dispatch(addToCart(id))
+    }
+  }
 
 
   return (
@@ -102,7 +109,7 @@ const SingleProduct = () => {
                   </div>
 
                   {/* Add to Cart Button */}
-                  <button className="flex-1 h-14 bg-[#F59E0B] text-[#111827] font-black uppercase text-[11px] tracking-[0.2em] rounded-xl flex items-center justify-center gap-3 hover:bg-[#F9FAFB] transition-all shadow-lg active:scale-[0.98]">
+                  <button className="flex-1 h-14 bg-[#F59E0B] text-[#111827] font-black uppercase text-[11px] tracking-[0.2em] rounded-xl flex items-center justify-center gap-3 hover:bg-[#F9FAFB] transition-all shadow-lg active:scale-[0.98]" onClick={handleAddToCart}>
                     <ShoppingBag size={18} strokeWidth={2.5} />
                     Add to Cart
                   </button>

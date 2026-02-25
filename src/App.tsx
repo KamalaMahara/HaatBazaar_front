@@ -6,6 +6,9 @@ import Login from "./pages/user/Login"
 import Home from "./pages/Home/Home"
 import ProductPage from "./pages/product/Product"
 import SingleProduct from "./pages/single product/SingleProduct"
+import MyCart from "./pages/cart/my-cart"
+import Checkout from "./pages/product/types/checkout/Checkout"
+import Categories from "./globals/types/components/categories/categories"
 
 
 
@@ -25,6 +28,10 @@ function App() {
 
           <Route path="/products" element={<ProductPage />} />
           <Route path="/products/:id" element={<SingleProduct />} />
+          <Route path="/my-cart" element={<MyCart />} />
+          <Route path="/categories" element={<Categories />} />
+
+          <Route path="/my-checkout" element={<Checkout />} />
 
         </Routes>
       </BrowserRouter>
