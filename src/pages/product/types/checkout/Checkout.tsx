@@ -8,9 +8,13 @@ const Checkout: React.FC = () => {
   const dispatch = useAppDispatch();
   const { items } = useAppSelector((store) => store.cart);
 
-  const [paymentType, setPaymentType] = useState<"card" | "cod">("cod");
+  // Expanded paymentType to support cod, khalti, esewa
+  const [paymentType, setPaymentType] = useState<"cod" | "khalti" | "esewa">("cod");
 
-  const subTotal = items.reduce((total, item) => Number(item.product.productPrice) * item.quantity + total, 0);
+  const subTotal = items.reduce(
+    (total, item) => Number(item.product.productPrice) * item.quantity + total,
+    0
+  );
   const shipping = 100;
   const total = subTotal + shipping;
 
@@ -22,7 +26,7 @@ const Checkout: React.FC = () => {
     totalAmount: 0,
     zipCode: "",
     email: "",
-    state: "", // State is initialized here
+    state: "",
     phoneNumber: "",
     paymentMethod: PaymentMethod.Cod,
     products: []
@@ -45,7 +49,12 @@ const Checkout: React.FC = () => {
       ...data,
       products: productData,
       totalAmount: total,
-      paymentMethod: paymentType === "card" ? PaymentMethod.Khalti : PaymentMethod.Cod
+      paymentMethod:
+        paymentType === "cod"
+          ? PaymentMethod.Cod
+          : paymentType === "khalti"
+            ? PaymentMethod.Khalti
+            : PaymentMethod.Esewa
     };
 
     if (productData.length === 0) {
@@ -75,9 +84,13 @@ const Checkout: React.FC = () => {
                   />
                   <div className="flex-1">
                     <h3 className="text-sm font-bold truncate w-40">{item.product.productName}</h3>
-                    <p className="text-xs text-gray-400">Qty: {item.quantity} × Rs. {item.product.productPrice}</p>
+                    <p className="text-xs text-gray-400">
+                      Qty: {item.quantity} × Rs. {item.product.productPrice}
+                    </p>
                   </div>
-                  <p className="font-bold text-[#F59E0B]">Rs. {Number(item.product.productPrice) * item.quantity}</p>
+                  <p className="font-bold text-[#F59E0B]">
+                    Rs. {Number(item.product.productPrice) * item.quantity}
+                  </p>
                 </div>
               )) : <p className="text-gray-500">Your cart is empty.</p>}
             </div>
@@ -95,16 +108,7 @@ const Checkout: React.FC = () => {
                 <input type="text" name="addressLine" onChange={handleChange} placeholder="Street Address / Area" className="input col-span-2" required />
                 <input type="text" name="city" onChange={handleChange} placeholder="City" className="input" required />
                 <input type="text" name="zipCode" onChange={handleChange} placeholder="Zip Code" className="input" required />
-
-                {/* FIXED: Added State Input Here */}
-                <input
-                  type="text"
-                  name="state"
-                  onChange={handleChange}
-                  placeholder="Province / State"
-                  className="input col-span-2"
-                  required
-                />
+                <input type="text" name="state" onChange={handleChange} placeholder="Province / State" className="input col-span-2" required />
               </div>
             </section>
 
@@ -120,10 +124,17 @@ const Checkout: React.FC = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentType("card")}
-                  className={`payment-btn flex-1 ${paymentType === "card" ? "active" : ""}`}
+                  onClick={() => setPaymentType("khalti")}
+                  className={`payment-btn flex-1 ${paymentType === "khalti" ? "active" : ""}`}
                 >
-                  Online (Khalti)
+                  Khalti
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPaymentType("esewa")}
+                  className={`payment-btn flex-1 ${paymentType === "esewa" ? "active" : ""}`}
+                >
+                  Esewa
                 </button>
               </div>
 
@@ -137,7 +148,10 @@ const Checkout: React.FC = () => {
                 </div>
               </div>
 
-              <button type="submit" className="w-full mt-8 bg-[#F59E0B] text-[#111827] font-black py-4 rounded-xl hover:bg-[#fbbf24] transition-all transform active:scale-95 shadow-lg shadow-amber-500/20">
+              <button
+                type="submit"
+                className="w-full mt-8 bg-[#F59E0B] text-[#111827] font-black py-4 rounded-xl hover:bg-[#fbbf24] transition-all transform active:scale-95 shadow-lg shadow-amber-500/20"
+              >
                 CONFIRM & PLACE ORDER
               </button>
             </section>
