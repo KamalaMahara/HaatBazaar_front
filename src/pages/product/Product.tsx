@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { ArrowRight, SlidersHorizontal } from 'lucide-react';
 
-import Navbar from '../../globals/types/components/Navbar/navbar';
+
 import ProductCard from './component/ProductCard';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { fetchproducts } from '../../store/productSlice';
@@ -20,7 +20,7 @@ const ProductPage: React.FC = () => {
   }, [dispatch])
 
   return (<>
-    <Navbar />
+
     <div className="min-h-screen bg-[#111827] text-[#F9FAFB] font-sans">
       <header className="pt-24 pb-12 px-6 lg:px-12 border-b border-white/5">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-end gap-6">

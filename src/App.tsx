@@ -9,6 +9,7 @@ import SingleProduct from "./pages/single product/SingleProduct"
 import MyCart from "./pages/cart/my-cart"
 import Checkout from "./pages/product/types/checkout/Checkout"
 import Categories from "./globals/types/components/categories/categories"
+import Navbar from "./globals/types/components/Navbar/navbar"
 
 
 
@@ -26,7 +27,7 @@ function App() {
 
           <Route path="/" element={<Home />} />
 
-          <Route path="/products" element={<ProductPage />} />
+          <Route path="/products" element={<> < Navbar /><ProductPage /></>} />
           <Route path="/products/:id" element={<SingleProduct />} />
           <Route path="/my-cart" element={<MyCart />} />
           <Route path="/categories" element={<Categories />} />
