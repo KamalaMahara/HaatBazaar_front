@@ -39,7 +39,7 @@ export function orderItem(data: IData) {
         dispatch(setStatus(Status.SUCCESS))
         dispatch(setItems(response.data.data))
         if (response.data.url) {
-          setKhaltiUrl(response.data.url)
+          dispatch(setKhaltiUrl(response.data.url))
         }
 
       }

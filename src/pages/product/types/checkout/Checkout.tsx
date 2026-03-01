@@ -1,4 +1,4 @@
-import React, { useState, type ChangeEvent, type SyntheticEvent } from "react";
+import React, { useEffect, useState, type ChangeEvent, type SyntheticEvent } from "react";
 import Navbar from "../../../../globals/types/components/Navbar/navbar";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { PaymentMethod, type IData } from "./types";
@@ -7,9 +7,13 @@ import { orderItem } from "../../../../store/checkoutSlice";
 const Checkout: React.FC = () => {
   const dispatch = useAppDispatch();
   const { items } = useAppSelector((store) => store.cart);
+  const khaltiUrl = useAppSelector((store) => store.orders.khaltiUrl);
 
-  // Expanded paymentType to support cod, khalti, esewa
-  const [paymentType, setPaymentType] = useState<"cod" | "khalti" | "esewa">("cod");
+
+
+  // Use enum directly for paymentType
+  const [paymentType, setPaymentType] = useState<PaymentMethod>(PaymentMethod.Cod);
+
 
   const subTotal = items.reduce(
     (total, item) => Number(item.product.productPrice) * item.quantity + total,
@@ -45,25 +49,50 @@ const Checkout: React.FC = () => {
       productQty: item.quantity
     }));
 
-    const finalData = {
-      ...data,
-      products: productData,
-      totalAmount: total,
-      paymentMethod:
-        paymentType === "cod"
-          ? PaymentMethod.Cod
-          : paymentType === "khalti"
-            ? PaymentMethod.Khalti
-            : PaymentMethod.Esewa
-    };
-
     if (productData.length === 0) {
       alert("Your cart is empty!");
       return;
     }
 
+    const finalData: IData = {
+      ...data,
+      products: productData,
+      totalAmount: total,
+      paymentMethod: paymentType // already an enum
+    };
+
     dispatch(orderItem(finalData));
   };
+
+  // Helper to get button text and color based on selected payment method
+  const getConfirmButtonProps = (method: PaymentMethod) => {
+    switch (method) {
+      case PaymentMethod.Khalti:
+        return {
+          text: "CONFIRM ORDER WITH KHALTI",
+          color: "#ac70f0" // Khalti purple
+        };
+      case PaymentMethod.Esewa:
+        return {
+          text: "CONFIRM ORDER WITH ESEWA",
+          color: "#3cc469" // Esewa green
+        };
+      case PaymentMethod.Cod:
+      default:
+        return {
+          text: "CONFIRM ORDER WITH COD",
+          color: "#F59E0B" // COD amber
+        };
+    }
+  };
+
+  const { text, color } = getConfirmButtonProps(paymentType);
+  useEffect(() => {
+    if (paymentType === PaymentMethod.Khalti && khaltiUrl) {
+      window.location.href = khaltiUrl; // redirect to Khalti
+    }
+  }, [paymentType, khaltiUrl]);
+
 
   return (
     <>
@@ -117,22 +146,22 @@ const Checkout: React.FC = () => {
               <div className="flex gap-4 mb-8">
                 <button
                   type="button"
-                  onClick={() => setPaymentType("cod")}
-                  className={`payment-btn flex-1 ${paymentType === "cod" ? "active" : ""}`}
+                  onClick={() => setPaymentType(PaymentMethod.Cod)}
+                  className={`payment-btn flex-1 ${paymentType === PaymentMethod.Cod ? "active" : ""}`}
                 >
                   Cash on Delivery
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentType("khalti")}
-                  className={`payment-btn flex-1 ${paymentType === "khalti" ? "active" : ""}`}
+                  onClick={() => setPaymentType(PaymentMethod.Khalti)}
+                  className={`payment-btn flex-1 ${paymentType === PaymentMethod.Khalti ? "active" : ""}`}
                 >
                   Khalti
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentType("esewa")}
-                  className={`payment-btn flex-1 ${paymentType === "esewa" ? "active" : ""}`}
+                  onClick={() => setPaymentType(PaymentMethod.Esewa)}
+                  className={`payment-btn flex-1 ${paymentType === PaymentMethod.Esewa ? "active" : ""}`}
                 >
                   Esewa
                 </button>
@@ -150,10 +179,12 @@ const Checkout: React.FC = () => {
 
               <button
                 type="submit"
-                className="w-full mt-8 bg-[#F59E0B] text-[#111827] font-black py-4 rounded-xl hover:bg-[#fbbf24] transition-all transform active:scale-95 shadow-lg shadow-amber-500/20"
+                style={{ backgroundColor: color }}
+                className="w-full mt-8 text-[#111827] font-black py-4 rounded-xl hover:opacity-90 transition-all transform active:scale-95 shadow-lg"
               >
-                CONFIRM & PLACE ORDER
+                {text}
               </button>
+
             </section>
           </form>
         </div>

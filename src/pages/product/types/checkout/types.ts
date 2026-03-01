@@ -19,7 +19,7 @@ export interface IOrder {
 
 export enum PaymentMethod {
   Esewa = "esewa",
-  Khalti = "Khalti",
+  Khalti = "khalti",
   Cod = "cod"
 }
 export interface IData {
