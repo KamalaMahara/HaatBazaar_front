@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { Status } from "../globals/types/types";
-import type { IData, IOrder, IOrderItems } from "../pages/product/types/checkout/types";
+import type { IData, IOrder, IOrderItems } from "../pages/product/component/checkout/types";
 import type { AppDispatch } from "./store";
 import { APIWITHTOKEN } from "../http";
 
