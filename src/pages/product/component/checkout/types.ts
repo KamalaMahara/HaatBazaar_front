@@ -2,7 +2,7 @@ import type { Status } from "../../../../globals/types/types";
 
 
 
-interface IProduct {
+export interface IProduct {
   productId: string,
   productQty: number,
   orderStatus: Status,

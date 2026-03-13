@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Register from "./pages/user/Register"
 import { Provider } from "react-redux"
 import store from "./store/store"
@@ -11,6 +11,7 @@ import Checkout from "./pages/product/component/checkout/Checkout"
 import Categories from "./globals/types/components/categories/categories"
 import Navbar from "./globals/types/components/Navbar/navbar"
 import MyOrders from "./pages/my-orders/MyOrders"
+import ResetPassword from "./pages/user/ResetPassword"
 
 
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/register" element={<Register />} />
 
           <Route path="/login" element={<Login />} />
+          <Route path="/resetpassword" element={<ResetPassword />} />
 
           <Route path="/" element={<Home />} />
 

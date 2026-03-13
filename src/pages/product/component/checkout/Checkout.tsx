@@ -3,6 +3,7 @@ import Navbar from "../../../../globals/types/components/Navbar/navbar";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { PaymentMethod, type IData } from "./types";
 import { orderItem } from "../../../../store/checkoutSlice";
+import { Status } from "../../../../globals/types/types";
 
 const Checkout: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -46,7 +47,9 @@ const Checkout: React.FC = () => {
 
     const productData = items.map((item) => ({
       productId: item.product.id,
-      productQty: item.quantity
+      productQty: item.quantity,
+      orderStatus: Status.SUCCESS,
+      totalAmount: Number(item.product.productPrice) * item.quantity
     }));
 
     if (productData.length === 0) {

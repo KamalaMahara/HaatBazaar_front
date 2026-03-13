@@ -156,7 +156,7 @@ const Login: React.FC = () => {
             </div>
 
             <div className="flex justify-end pr-1">
-              <button type="button" className="text-sm font-bold text-[#F59E0B] hover:text-[#d97706] transition-all hover:underline decoration-2 underline-offset-4">
+              <button type="button" className="text-sm font-bold text-[#F59E0B] hover:text-[#d97706] transition-all hover:underline decoration-2 underline-offset-4" onClick={() => Navigate("/reset-password")}>
                 Forgot password?
               </button>
             </div>
