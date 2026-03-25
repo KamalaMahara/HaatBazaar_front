@@ -5,6 +5,7 @@ import Navbar from "../../globals/types/components/Navbar/navbar";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { fetchMyOrders } from "../../store/checkoutSlice";
 import { PaymentMethod } from "../product/component/checkout/types";
+import { Link } from "react-router";
 
 /* ---------------- TYPES ---------------- */
 
@@ -312,9 +313,11 @@ const MyOrders: React.FC = () => {
                               <span className="font-semibold text-[#F59E0B]">
                                 Rs. {item.price * item.quantity}
                               </span>
-                              <button className="mt-1 text-sm text-white underline">
-                                View Product
-                              </button>
+                              <Link to={`/my-orders/${item.id}`}>
+                                <button className="mt-1 text-sm text-white underline">
+                                  View Product
+                                </button>
+                              </Link>
                             </div>
                           </div>
                         ))}
