@@ -9,7 +9,7 @@ import { Link } from "react-router";
 
 /* ---------------- TYPES ---------------- */
 
-type OrderStatus =
+export type OrderStatus =
   | "Pending"
   | "Processing"
   | "Shipped"

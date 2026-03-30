@@ -5,8 +5,8 @@ import type { Status } from "../../../../globals/types/types";
 export interface IProduct {
   productId: string,
   productQty: number,
-  orderStatus: Status,
-  totalAmount: number,
+  orderStatus?: string,
+  totalAmount?: number,
   Payment?: {
     paymentMethod: PaymentMethod,
     paymentStatus: string
@@ -16,6 +16,7 @@ export interface IProduct {
 export interface IOrderItems extends IProduct {
   id: string,
   date: string,
+  orderId: string,
 
 }
 

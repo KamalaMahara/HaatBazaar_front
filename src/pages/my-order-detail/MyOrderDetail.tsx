@@ -1,14 +1,35 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, Mail, PhoneCall, Truck, MapPin, User, CreditCard } from "lucide-react";
+import { ArrowLeft, Mail, PhoneCall, Truck, MapPin, User, CreditCard, XCircle, AlertTriangle } from "lucide-react";
 import Navbar from "../../globals/types/components/Navbar/navbar";
 import { useAppSelector } from "../../store/hooks";
+import { useAppDispatch } from "../../store/hooks";
+import { updateOrderStatusToCancel } from "../../store/checkoutSlice";
+
+
+
+
+const CANCEL_REASONS = [
+  "Changed my mind",
+  "Found a better price elsewhere",
+  "Ordered by mistake",
+  "Delivery time is too long",
+  "Other",
+];
+
+const CANCELLABLE_STATUSES = ["pending", "preparation"];
 
 const MyOrderDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { items } = useAppSelector((store) => store.orders);
   const [orderDetail, setOrderDetail] = useState<any>(null);
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelNote, setCancelNote] = useState("");
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelSuccess, setCancelSuccess] = useState(false);
 
   useEffect(() => {
     const found = items
@@ -17,7 +38,6 @@ const MyOrderDetail: React.FC = () => {
           .map((detail: any) => ({ ...detail, parentOrder: order }))
       )
       .find((item: any) => item.id === id);
-
     setOrderDetail(found);
   }, [id, items]);
 
@@ -42,6 +62,21 @@ const MyOrderDetail: React.FC = () => {
   const statusStyle =
     statusColors[parentOrder?.orderStatus?.toLowerCase()] ??
     "text-gray-400 bg-gray-400/10";
+
+  const isCancellable = CANCELLABLE_STATUSES.includes(
+    parentOrder?.orderStatus?.toLowerCase()
+  );
+  const dispatch = useAppDispatch();
+  const handleCancelSubmit = async () => {
+    if (!cancelReason) return;
+    setIsCancelling(true);
+    // Replace with actual API call
+    await new Promise((res) => setTimeout(res, 1500));
+    dispatch(updateOrderStatusToCancel({ orderId: parentOrder.id }));
+    setIsCancelling(false);
+    setCancelSuccess(true);
+    setShowCancelModal(false);
+  };
 
   return (
     <>
@@ -117,6 +152,62 @@ const MyOrderDetail: React.FC = () => {
                   </div>
                 </div>
               </div>
+
+              {/* CANCEL ORDER SECTION */}
+              {cancelSuccess ? (
+                <div className="flex items-start gap-4 bg-green-400/10 border border-green-400/20 rounded-2xl px-6 py-5 w-full">
+                  <div className="w-9 h-9 flex items-center justify-center bg-green-400/10 rounded-lg shrink-0 mt-0.5">
+                    <XCircle size={18} className="text-red-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-red-400">Order Cancelled</p>
+                    <p className="text-sm text-gray-400 mt-1">
+                      Your order request has been cancelled!.
+                    </p>
+                  </div>
+                </div>
+              ) : isCancellable ? (
+                <div className="flex flex-col bg-[#1F2937] border border-white/5 rounded-2xl px-4 py-5 md:p-6 xl:p-8 w-full space-y-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-9 h-9 flex items-center justify-center bg-red-400/10 rounded-lg shrink-0">
+                      <XCircle size={18} className="text-red-400" />
+                    </div>
+                    <div>
+                      <p className="text-base font-semibold text-white">Cancel this order</p>
+                      <p className="text-sm text-gray-400 mt-0.5">
+                        You can cancel this order since it's still{" "}
+                        <span className="text-yellow-400 capitalize font-medium">{parentOrder?.orderStatus}</span>.
+                        Once it ships, cancellation won't be available.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-yellow-400/5 border border-yellow-400/15 rounded-xl px-4 py-3">
+                    <AlertTriangle size={15} className="text-yellow-400 shrink-0" />
+                    <p className="text-xs text-yellow-300/80">
+                      Refunds for prepaid orders are processed within 5–7 business days.
+                    </p>
+                  </div>
+                  <div className="pt-1">
+                    <button
+                      onClick={() => setShowCancelModal(true)}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-red-400/30 text-red-400 text-sm font-semibold hover:bg-red-400/10 transition-colors"
+                    >
+                      <XCircle size={16} />
+                      Request Cancellation
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                parentOrder?.orderStatus?.toLowerCase() !== "cancelled" && (
+                  <div className="flex items-center gap-3 bg-[#1F2937] border border-white/5 rounded-2xl px-6 py-4 w-full">
+                    <XCircle size={16} className="text-gray-500 shrink-0" />
+                    <p className="text-sm text-gray-500">
+                      This order can no longer be cancelled as it is already{" "}
+                      <span className="capitalize">{parentOrder?.orderStatus}</span>.
+                    </p>
+                  </div>
+                )
+              )}
 
               {/* SUMMARY & SHIPPING */}
               <div className="flex justify-center flex-col md:flex-row items-stretch w-full space-y-4 md:space-y-0 md:space-x-6 xl:space-x-8">
@@ -194,8 +285,8 @@ const MyOrderDetail: React.FC = () => {
                       {parentOrder?.Payment?.paymentMethod ?? "N/A"}
                     </p>
                     <p className={`text-xs capitalize font-medium ${parentOrder?.Payment?.paymentstatus === "paid"
-                        ? "text-green-400"
-                        : "text-yellow-400"
+                      ? "text-green-400"
+                      : "text-yellow-400"
                       }`}>
                       {parentOrder?.Payment?.paymentstatus ?? "N/A"}
                     </p>
@@ -250,6 +341,98 @@ const MyOrderDetail: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* CANCEL MODAL */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-[#1F2937] border border-white/10 rounded-2xl w-full max-w-md p-6 space-y-5 shadow-2xl">
+
+            {/* Modal Header */}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 flex items-center justify-center bg-red-400/10 rounded-xl shrink-0">
+                <XCircle size={20} className="text-red-400" />
+              </div>
+              <div>
+                <h2 className="text-lg font-semibold text-white">Cancel Order</h2>
+                <p className="text-sm text-gray-400 mt-0.5">
+                  Order #{parentOrder?.id?.slice(-6).toUpperCase()}
+                </p>
+              </div>
+            </div>
+
+            {/* Reason Select */}
+            <div className="space-y-2">
+              <label className="text-xs text-gray-500 uppercase tracking-wider">
+                Reason for cancellation <span className="text-red-400">*</span>
+              </label>
+              <div className="space-y-2">
+                {CANCEL_REASONS.map((reason) => (
+                  <button
+                    key={reason}
+                    onClick={() => setCancelReason(reason)}
+                    className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-colors ${cancelReason === reason
+                      ? "border-red-400/50 bg-red-400/10 text-red-300"
+                      : "border-white/10 bg-[#111827] text-gray-300 hover:border-white/20"
+                      }`}
+                  >
+                    <span className={`inline-block w-3.5 h-3.5 rounded-full border mr-2.5 align-middle transition-colors ${cancelReason === reason
+                      ? "border-red-400 bg-red-400"
+                      : "border-gray-500 bg-transparent"
+                      }`} />
+                    {reason}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Optional Note */}
+            <div className="space-y-2">
+              <label className="text-xs text-gray-500 uppercase tracking-wider">
+                Additional note <span className="text-gray-600">(optional)</span>
+              </label>
+              <textarea
+                value={cancelNote}
+                onChange={(e) => setCancelNote(e.target.value)}
+                rows={3}
+                placeholder="Tell us more about why you're cancelling..."
+                className="w-full bg-[#111827] border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-200 placeholder-gray-600 resize-none focus:outline-none focus:border-white/20"
+              />
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => {
+                  setShowCancelModal(false);
+                  setCancelReason("");
+                  setCancelNote("");
+                }}
+                disabled={isCancelling}
+                className="flex-1 py-2.5 rounded-xl border border-white/10 text-sm text-gray-300 hover:bg-white/5 transition-colors disabled:opacity-50"
+              >
+                Keep Order
+              </button>
+              <button
+                onClick={handleCancelSubmit}
+                disabled={!cancelReason || isCancelling}
+                className="flex-1 py-2.5 rounded-xl bg-red-500/20 border border-red-400/30 text-sm font-semibold text-red-400 hover:bg-red-500/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {isCancelling ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-red-400/40 border-t-red-400 rounded-full animate-spin" />
+                    Cancelling...
+                  </>
+                ) : (
+                  <>
+                    <XCircle size={15} />
+                    Confirm Cancel
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
