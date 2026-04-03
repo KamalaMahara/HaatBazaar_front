@@ -1,13 +1,14 @@
-import { useState } from "react";
-import type { NavKey } from "../Admin/types";
-import DashboardLayout from "../Admin/components/DashboardLayout";
+import React, { useState } from "react";
+import DashboardLayout from "./components/DashboardLayout";
 import Overview from "./pages/Overview";
 import Categories from "./pages/Categories";
 import Products from "./pages/Products";
 import Payments from "./pages/Payments";
 import Users from "./pages/Users";
 
-const PAGES: Record<NavKey, React.ReactElement> = {
+type PageKey = "overview" | "categories" | "products" | "payments" | "users";
+
+const PAGES: Record<PageKey, React.ReactElement> = {
   overview: <Overview />,
   categories: <Categories />,
   products: <Products />,
@@ -16,10 +17,10 @@ const PAGES: Record<NavKey, React.ReactElement> = {
 };
 
 const AdminDashboard: React.FC = () => {
-  const [active, setActive] = useState<NavKey>("overview");
+  const [active, setActive] = useState<PageKey>("overview");
 
   return (
-    <DashboardLayout active={active} onNavigate={setActive}>
+    <DashboardLayout active={active} onNavigate={key => setActive(key as PageKey)}>
       {PAGES[active]}
     </DashboardLayout>
   );

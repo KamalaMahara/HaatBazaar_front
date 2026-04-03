@@ -1,7 +1,6 @@
-import type { NavKey, NavItem } from "../types";
-import { COLORS } from "../Theme";
+import React from "react";
 
-const NAV: NavItem[] = [
+const NAV = [
   { key: "overview", label: "Overview", icon: "📊" },
   { key: "categories", label: "Categories", icon: "🏷️" },
   { key: "products", label: "Products", icon: "📦" },
@@ -10,116 +9,63 @@ const NAV: NavItem[] = [
 ];
 
 interface SidebarProps {
-  active: NavKey;
-  onNavigate: (key: NavKey) => void;
+  active: string;
+  onNavigate: (key: string) => void;
+  onClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ active, onNavigate }) => {
+const Sidebar: React.FC<SidebarProps> = ({ active, onNavigate, onClose }) => {
+  const handleNav = (key: string) => { onNavigate(key); onClose?.(); };
+
   return (
-    <aside
-      style={{
-        width: 240,
-        background: COLORS.surface,
-        borderRight: `1px solid ${COLORS.border}`,
-        display: "flex",
-        flexDirection: "column",
-        padding: "28px 16px",
-        gap: 4,
-        flexShrink: 0,
-      }}
-    >
+    <aside className="flex flex-col h-full w-full bg-gray-800 border-r border-white/[0.07] px-3 py-7">
+
       {/* Logo */}
-      <div style={{ paddingLeft: 10, marginBottom: 32 }}>
-        <div
-          style={{
-            fontSize: 20,
-            fontWeight: 800,
-            color: COLORS.amber,
-            letterSpacing: "-0.03em",
-          }}
-        >
-          🛍️ HaatBazaar
+      <div className="px-3 mb-8">
+        {/* Flex container to align logo and text */}
+        <div className="flex items-center gap-2">
+          <img
+            src="src\assets\logo.png"
+            alt="HaatBazaar Logo"
+            className="h-8 w-8 object-contain"
+          />
+          <p className="text-xl font-extrabold text-amber-500 tracking-tight">
+            HaatBazaar
+          </p>
         </div>
-        <div
-          style={{
-            fontSize: 11,
-            color: COLORS.muted,
-            marginTop: 3,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-          }}
-        >
+        <p className="text-[10px] text-white mt-1 uppercase tracking-widest py-4 px-5">
           Admin Panel
-        </div>
+        </p>
       </div>
 
-      {/* Nav items */}
-      {NAV.map((n) => (
-        <button
-          key={n.key}
-          onClick={() => onNavigate(n.key)}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "11px 14px",
-            borderRadius: 12,
-            border: "none",
-            cursor: "pointer",
-            background: active === n.key ? COLORS.amberDim : "transparent",
-            color: active === n.key ? COLORS.amber : COLORS.muted,
-            fontWeight: active === n.key ? 700 : 500,
-            fontSize: 14,
-            transition: "all 0.18s",
-            textAlign: "left",
-            borderLeft:
-              active === n.key
-                ? `3px solid ${COLORS.amber}`
-                : "3px solid transparent",
-          }}
-        >
-          <span style={{ fontSize: 18 }}>{n.icon}</span>
-          {n.label}
-        </button>
-      ))}
+      {/* Nav links */}
+      <nav className="flex flex-col gap-1 flex-1">
+        {NAV.map(n => (
+          <button
+            key={n.key}
+            onClick={() => handleNav(n.key)}
+            className={`flex items-center gap-3 px-6 py-6 rounded-xl text-sm font-medium transition-all duration-150 text-left w-full border-none cursor-pointer
+              border-l-[3px]
+              ${active === n.key
+                ? "bg-amber-500/15 text-amber-500 border-amber-500 font-bold"
+                : "text-white border-transparent hover:text-gray-200"
+              }`}
+          >
+            <span className="text-lg leading-none">{n.icon}</span>
+            <span>{n.label}</span>
+          </button>
+        ))}
+      </nav>
 
       {/* Admin profile */}
-      <div
-        style={{
-          marginTop: "auto",
-          borderTop: `1px solid ${COLORS.border}`,
-          paddingTop: 20,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            padding: "8px 10px",
-          }}
-        >
-          <div
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: "50%",
-              background: COLORS.amberDim,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontWeight: 800,
-              fontSize: 13,
-              color: COLORS.amber,
-            }}
-          >
+      <div className="border-t border-white/[0.07] pt-5 mt-4">
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-9 h-9 rounded-full bg-amber-500/15 flex items-center justify-center text-amber-500 font-extrabold text-sm shrink-0">
             BP
           </div>
           <div>
-            <div style={{ fontSize: 13, fontWeight: 700, color: COLORS.text }}>
-              Bikash Poudel
-            </div>
-            <div style={{ fontSize: 11, color: COLORS.muted }}>Administrator</div>
+            <p className="text-sm font-bold text-gray-100">Bikash Poudel</p>
+            <p className="text-[11px] text-gray-500">Administrator</p>
           </div>
         </div>
       </div>

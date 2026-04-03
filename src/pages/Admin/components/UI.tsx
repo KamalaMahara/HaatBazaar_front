@@ -1,250 +1,130 @@
-import type { ChangeEvent, CSSProperties, ReactNode } from "react";
-import { COLORS } from "../Theme";
-import type { Payment, Product } from "../types";
+import React from "react";
 
 // ── Badge ──────────────────────────────────────────────────────────────────
-interface BadgeProps {
-  label: string;
-  color: string;
-  bg: string;
-}
+type BadgeVariant = "success" | "danger" | "warning" | "info" | "purple" | "muted";
 
-export const Badge: React.FC<BadgeProps> = ({ label, color, bg }) => (
-  <span
-    style={{
-      background: bg,
-      color,
-      fontSize: 11,
-      fontWeight: 700,
-      padding: "3px 10px",
-      borderRadius: 999,
-      letterSpacing: "0.04em",
-      textTransform: "uppercase",
-    }}
-  >
+const BADGE_STYLES: Record<BadgeVariant, string> = {
+  success: "bg-emerald-500/15 text-emerald-400",
+  danger: "bg-red-500/15 text-red-400",
+  warning: "bg-amber-500/15 text-amber-400",
+  info: "bg-blue-500/15 text-blue-400",
+  purple: "bg-violet-500/15 text-violet-400",
+  muted: "bg-white/10 text-gray-400",
+};
+
+const STATUS_MAP: Record<string, BadgeVariant> = {
+  Active: "success",
+  Inactive: "muted",
+  "Out of Stock": "danger",
+  Banned: "danger",
+  Completed: "success",
+  Pending: "warning",
+  Failed: "danger",
+  Refunded: "info",
+};
+
+const METHOD_MAP: Record<string, BadgeVariant> = {
+  Khalti: "purple",
+  eSewa: "success",
+  COD: "warning",
+};
+
+interface BadgeProps { label: string; variant: BadgeVariant; }
+
+export const Badge: React.FC<BadgeProps> = ({ label, variant }) => (
+  <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase tracking-wider ${BADGE_STYLES[variant]}`}>
     {label}
   </span>
 );
 
-// ── Status badge helper ────────────────────────────────────────────────────
-type StatusKey =
-  | "Active" | "Inactive" | "Out of Stock" | "Banned"
-  | "Completed" | "Pending" | "Failed" | "Refunded";
+export const StatusBadge: React.FC<{ status: string }> = ({ status }) => (
+  <Badge label={status} variant={STATUS_MAP[status] ?? "muted"} />
+);
 
-export const statusBadge = (s: StatusKey): ReactNode => {
-  const map: Record<StatusKey, [string, string]> = {
-    Active: [COLORS.success, COLORS.successDim],
-    Inactive: [COLORS.muted, "rgba(156,163,175,0.15)"],
-    "Out of Stock": [COLORS.danger, COLORS.dangerDim],
-    Banned: [COLORS.danger, COLORS.dangerDim],
-    Completed: [COLORS.success, COLORS.successDim],
-    Pending: [COLORS.amber, COLORS.amberDim],
-    Failed: [COLORS.danger, COLORS.dangerDim],
-    Refunded: [COLORS.info, COLORS.infoDim],
-  };
-  const [c, bg] = map[s] ?? [COLORS.muted, "rgba(156,163,175,0.15)"];
-  return <Badge label={s} color={c} bg={bg} />;
-};
-
-// ── Payment method badge helper ────────────────────────────────────────────
-export const methodBadge = (m: Payment["method"]): ReactNode => {
-  const map: Record<Payment["method"], [string, string]> = {
-    Khalti: [COLORS.purple, COLORS.purpleDim],
-    eSewa: [COLORS.success, COLORS.successDim],
-    COD: [COLORS.amber, COLORS.amberDim],
-  };
-  const [c, bg] = map[m] ?? [COLORS.muted, "rgba(156,163,175,0.15)"];
-  return <Badge label={m} color={c} bg={bg} />;
-};
+export const MethodBadge: React.FC<{ method: string }> = ({ method }) => (
+  <Badge label={method} variant={METHOD_MAP[method] ?? "muted"} />
+);
 
 // ── Button ─────────────────────────────────────────────────────────────────
+type BtnVariant = "primary" | "ghost" | "danger";
+
+const BTN_STYLES: Record<BtnVariant, string> = {
+  primary: "bg-amber-500 text-gray-900 hover:bg-amber-400",
+  ghost: "bg-white/5 text-gray-100 border border-white/10 hover:bg-white/10",
+  danger: "bg-red-500/15 text-red-400 border border-red-500/25 hover:bg-red-500/25",
+};
+
 interface BtnProps {
-  children: ReactNode;
+  children: React.ReactNode;
   onClick?: () => void;
-  variant?: "primary" | "ghost" | "danger";
+  variant?: BtnVariant;
   small?: boolean;
-  danger?: boolean;
-  style?: CSSProperties;
+  type?: "button" | "submit";
+  className?: string;
 }
 
 export const Btn: React.FC<BtnProps> = ({
-  children,
-  onClick,
-  variant = "primary",
-  small = false,
-  danger = false,
-  style: extraStyle = {},
-}) => {
-  const base: CSSProperties = {
-    border: "none",
-    cursor: "pointer",
-    fontWeight: 700,
-    borderRadius: 10,
-    transition: "all 0.18s",
-    display: "inline-flex",
-    alignItems: "center",
-    gap: 6,
-    padding: small ? "6px 14px" : "10px 20px",
-    fontSize: small ? 12 : 14,
-  };
-
-  const variants: Record<string, CSSProperties> = {
-    primary: { background: COLORS.amber, color: "#111827" },
-    ghost: {
-      background: "rgba(255,255,255,0.05)",
-      color: COLORS.text,
-      border: `1px solid ${COLORS.border}`,
-    },
-    danger: {
-      background: COLORS.dangerDim,
-      color: COLORS.danger,
-      border: `1px solid rgba(239,68,68,0.25)`,
-    },
-  };
-
-  return (
-    <button
-      onClick={onClick}
-      style={{ ...base, ...(danger ? variants.danger : variants[variant]), ...extraStyle }}
-    >
-      {children}
-    </button>
-  );
-};
+  children, onClick, variant = "primary", small = false, type = "button", className = "",
+}) => (
+  <button
+    type={type}
+    onClick={onClick}
+    className={`inline-flex items-center justify-center gap-1.5 font-bold rounded-xl cursor-pointer transition-all duration-150 active:scale-95 whitespace-nowrap border-none
+      ${small ? "text-xs px-3 py-1.5" : "text-sm px-5 py-2.5"}
+      ${BTN_STYLES[variant]} ${className}`}
+  >
+    {children}
+  </button>
+);
 
 // ── Input / Select ─────────────────────────────────────────────────────────
 interface InputProps {
   label: string;
   name: string;
   value: string | number;
-  onChange: (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   type?: string;
   placeholder?: string;
   options?: string[];
 }
 
-export const Input: React.FC<InputProps> = ({
-  label,
-  name,
-  value,
-  onChange,
-  type = "text",
-  placeholder,
-  options,
-}) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-    <label
-      style={{
-        fontSize: 12,
-        color: COLORS.muted,
-        fontWeight: 600,
-        letterSpacing: "0.05em",
-        textTransform: "uppercase",
-      }}
-    >
-      {label}
-    </label>
+export const Input: React.FC<InputProps> = ({ label, name, value, onChange, type = "text", placeholder, options }) => (
+  <div className="flex flex-col gap-1.5">
+    <label className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">{label}</label>
     {options ? (
       <select
-        name={name}
-        value={value}
-        onChange={onChange}
-        style={{
-          background: "#111827",
-          border: `1px solid rgba(255,255,255,0.12)`,
-          borderRadius: 10,
-          padding: "11px 14px",
-          color: COLORS.text,
-          fontSize: 14,
-          outline: "none",
-        }}
+        name={name} value={value} onChange={onChange}
+        className="bg-gray-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-gray-100 text-sm outline-none focus:border-amber-500 transition-colors"
       >
-        {options.map((o) => (
-          <option key={o} value={o}>
-            {o}
-          </option>
-        ))}
+        {options.map(o => <option key={o} value={o} className="bg-gray-800">{o}</option>)}
       </select>
     ) : (
       <input
-        type={type}
-        name={name}
-        value={value}
-        onChange={onChange as (e: ChangeEvent<HTMLInputElement>) => void}
-        placeholder={placeholder}
-        style={{
-          background: "#111827",
-          border: `1px solid rgba(255,255,255,0.12)`,
-          borderRadius: 10,
-          padding: "11px 14px",
-          color: COLORS.text,
-          fontSize: 14,
-          outline: "none",
-        }}
+        type={type} name={name} value={value} onChange={onChange} placeholder={placeholder}
+        className="bg-gray-900 border border-white/10 rounded-xl px-3.5 py-2.5 text-gray-100 text-sm outline-none focus:border-amber-500 transition-colors placeholder:text-gray-600"
       />
     )}
   </div>
 );
 
 // ── Modal ──────────────────────────────────────────────────────────────────
-interface ModalProps {
-  title: string;
-  children: ReactNode;
-  onClose: () => void;
-}
+interface ModalProps { title: string; children: React.ReactNode; onClose: () => void; }
 
 export const Modal: React.FC<ModalProps> = ({ title, children, onClose }) => (
   <div
-    style={{
-      position: "fixed",
-      inset: 0,
-      zIndex: 100,
-      background: "rgba(0,0,0,0.7)",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      padding: 16,
-    }}
+    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
     onClick={onClose}
   >
     <div
-      style={{
-        background: COLORS.surface,
-        borderRadius: 20,
-        border: `1px solid ${COLORS.border}`,
-        padding: 28,
-        width: "100%",
-        maxWidth: 480,
-        animation: "popIn 0.28s cubic-bezier(0.34,1.56,0.64,1)",
-      }}
-      onClick={(e) => e.stopPropagation()}
+      className="bg-gray-800 border border-white/10 rounded-2xl p-6 w-full max-w-md animate-[popIn_0.28s_cubic-bezier(0.34,1.56,0.64,1)]"
+      onClick={e => e.stopPropagation()}
     >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 22,
-        }}
-      >
-        <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: COLORS.text }}>
-          {title}
-        </h3>
+      <div className="flex justify-between items-center mb-5">
+        <h3 className="text-lg font-bold text-gray-100">{title}</h3>
         <button
           onClick={onClose}
-          style={{
-            background: "rgba(255,255,255,0.07)",
-            border: "none",
-            color: COLORS.muted,
-            width: 32,
-            height: 32,
-            borderRadius: 8,
-            cursor: "pointer",
-            fontSize: 16,
-          }}
-        >
-          ✕
-        </button>
+          className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 text-gray-400 hover:bg-white/10 transition-colors text-sm cursor-pointer border-none"
+        >✕</button>
       </div>
       {children}
     </div>
@@ -252,43 +132,48 @@ export const Modal: React.FC<ModalProps> = ({ title, children, onClose }) => (
 );
 
 // ── Confirm Modal ──────────────────────────────────────────────────────────
-interface ConfirmModalProps {
-  message: string;
-  onConfirm: () => void;
-  onClose: () => void;
-}
+interface ConfirmProps { message: string; onConfirm: () => void; onClose: () => void; }
 
-export const ConfirmModal: React.FC<ConfirmModalProps> = ({
-  message,
-  onConfirm,
-  onClose,
-}) => (
+export const ConfirmModal: React.FC<ConfirmProps> = ({ message, onConfirm, onClose }) => (
   <Modal title="Confirm Delete" onClose={onClose}>
-    <p style={{ color: COLORS.muted, marginBottom: 24 }}>{message}</p>
-    <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-      <Btn onClick={onClose} variant="ghost">
-        Cancel
-      </Btn>
-      <Btn onClick={onConfirm} danger>
-        Delete
-      </Btn>
+    <p className="text-gray-400 text-sm mb-6">{message}</p>
+    <div className="flex gap-3 justify-end">
+      <Btn onClick={onClose} variant="ghost">Cancel</Btn>
+      <Btn onClick={onConfirm} variant="danger">Delete</Btn>
     </div>
   </Modal>
 );
 
-// ── Table header helper ────────────────────────────────────────────────────
-export const Th: React.FC<{ children: ReactNode }> = ({ children }) => (
-  <th
-    style={{
-      padding: "14px 20px",
-      textAlign: "left",
-      fontSize: 11,
-      fontWeight: 700,
-      color: COLORS.muted,
-      textTransform: "uppercase",
-      letterSpacing: "0.05em",
-    }}
-  >
-    {children}
-  </th>
+// ── Table wrapper ──────────────────────────────────────────────────────────
+export const TableWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <div className="bg-gray-800 rounded-2xl border border-white/[0.07] overflow-hidden">
+    <div className="overflow-x-auto">{children}</div>
+  </div>
+);
+
+// ── Section header ─────────────────────────────────────────────────────────
+interface SectionHeaderProps { title: string; subtitle: string; action?: React.ReactNode; }
+
+export const SectionHeader: React.FC<SectionHeaderProps> = ({ title, subtitle, action }) => (
+  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+    <div>
+      <h2 className="text-xl sm:text-2xl font-extrabold text-gray-100">{title}</h2>
+      <p className="text-gray-400 text-sm mt-1">{subtitle}</p>
+    </div>
+    {action && <div>{action}</div>}
+  </div>
+);
+
+// ── Stat card ──────────────────────────────────────────────────────────────
+interface StatCardProps { label: string; value: string | number; icon: string; iconClass: string; delta?: string; }
+
+export const StatCard: React.FC<StatCardProps> = ({ label, value, icon, iconClass, delta }) => (
+  <div className="bg-gray-800 rounded-2xl border border-white/[0.07] p-5 flex flex-col gap-3">
+    <div className="flex justify-between items-start">
+      <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-widest">{label}</span>
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xl ${iconClass}`}>{icon}</div>
+    </div>
+    <div className="text-3xl font-extrabold text-gray-100">{value}</div>
+    {delta && <div className="text-xs text-emerald-400 font-medium">↑ {delta} from last month</div>}
+  </div>
 );

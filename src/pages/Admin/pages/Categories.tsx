@@ -1,141 +1,100 @@
-import { useState, type ChangeEvent } from "react";
+import React, { useState } from "react";
+import { seedCategories, } from "../data/seeddata";
 import type { Category } from "../types";
-import { COLORS } from "../Theme";
-import { Btn, Input, Modal, ConfirmModal, statusBadge, Th } from "../components/UI";
-import { seedCategories } from "../data/seeddata";
+import { Btn, Input, Modal, ConfirmModal, StatusBadge, SectionHeader, TableWrapper } from "../components/UI";
 
-type CategoryForm = Omit<Category, "id" | "productCount">;
-
-const EMPTY_FORM: CategoryForm = { name: "", icon: "", status: "Active" };
+type CategoryForm = { id?: number; name: string; icon: string; status: "Active" | "Inactive"; productCount?: number };
+const EMPTY: CategoryForm = { name: "", icon: "", status: "Active" };
 
 const Categories: React.FC = () => {
   const [cats, setCats] = useState<Category[]>(seedCategories);
   const [modal, setModal] = useState<"add" | "edit" | null>(null);
   const [confirm, setConfirm] = useState<{ id: number } | null>(null);
-  const [form, setForm] = useState<CategoryForm & { id?: number; productCount?: number }>(EMPTY_FORM);
+  const [form, setForm] = useState<CategoryForm>(EMPTY);
 
-  const openAdd = (): void => {
-    setForm(EMPTY_FORM);
-    setModal("add");
-  };
+  const openAdd = () => { setForm(EMPTY); setModal("add"); };
+  const openEdit = (c: Category) => { setForm({ ...c }); setModal("edit"); };
+  const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
 
-  const openEdit = (c: Category): void => {
-    setForm({ ...c });
-    setModal("edit");
-  };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
-    const { name, value } = e.target;
-    setForm((f) => ({ ...f, [name]: value }));
-  };
-
-  const save = (): void => {
+  const save = () => {
     if (!form.name.trim()) return;
     if (modal === "add") {
-      const newCat: Category = {
-        id: Date.now(),
-        name: form.name,
-        icon: form.icon,
-        status: form.status as Category["status"],
-        productCount: 0,
-      };
-      setCats((prev) => [...prev, newCat]);
+      setCats(p => [...p, { ...form, id: Date.now(), productCount: 0 } as Category]);
     } else {
-      setCats((prev) =>
-        prev.map((c) =>
-          c.id === form.id
-            ? { ...c, name: form.name, icon: form.icon, status: form.status as Category["status"] }
-            : c
-        )
-      );
+      setCats(p => p.map(c => c.id === form.id ? { ...c, ...form } as Category : c));
     }
     setModal(null);
   };
 
-  const confirmDelete = (): void => {
-    if (!confirm) return;
-    setCats((prev) => prev.filter((c) => c.id !== confirm.id));
-    setConfirm(null);
-  };
-
   return (
     <div>
-      {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 24,
-        }}
-      >
-        <div>
-          <h2 style={{ fontSize: 22, fontWeight: 800, color: COLORS.text, margin: 0 }}>
-            Categories
-          </h2>
-          <p style={{ color: COLORS.muted, fontSize: 14, marginTop: 4 }}>
-            {cats.length} categories total
-          </p>
-        </div>
-        <Btn onClick={openAdd}>+ Add Category</Btn>
+      <SectionHeader
+        title="Categories"
+        subtitle={`${cats.length} categories total`}
+        action={<Btn onClick={openAdd}>+ Add Category</Btn>}
+      />
+
+      {/* Mobile cards */}
+      <div className="flex flex-col gap-3 lg:hidden">
+        {cats.map(c => (
+          <div key={c.id} className="bg-gray-800 rounded-2xl border border-white/[0.07] p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-3">
+                <span className="text-3xl">{c.icon}</span>
+                <div>
+                  <p className="font-bold text-gray-100">{c.name}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{c.productCount} products</p>
+                </div>
+              </div>
+              <StatusBadge status={c.status} />
+            </div>
+            <div className="flex gap-2 pt-3 border-t border-white/[0.07]">
+              <Btn small onClick={() => openEdit(c)} variant="ghost" className="flex-1">✏️ Edit</Btn>
+              <Btn small variant="danger" onClick={() => setConfirm({ id: c.id })} className="flex-1">🗑 Delete</Btn>
+            </div>
+          </div>
+        ))}
       </div>
 
-      {/* Table */}
-      <div
-        style={{
-          background: COLORS.surface,
-          borderRadius: 16,
-          border: `1px solid ${COLORS.border}`,
-          overflow: "hidden",
-        }}
-      >
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ borderBottom: `1px solid ${COLORS.border}` }}>
-              {["Icon", "Name", "Products", "Status", "Actions"].map((h) => (
-                <Th key={h}>{h}</Th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {cats.map((c, i) => (
-              <tr
-                key={c.id}
-                style={{
-                  borderBottom: i < cats.length - 1 ? `1px solid ${COLORS.border}` : "none",
-                }}
-              >
-                <td style={{ padding: "14px 20px", fontSize: 24 }}>{c.icon}</td>
-                <td style={{ padding: "14px 20px", fontWeight: 600, color: COLORS.text }}>
-                  {c.name}
-                </td>
-                <td style={{ padding: "14px 20px", color: COLORS.muted }}>
-                  {c.productCount}
-                </td>
-                <td style={{ padding: "14px 20px" }}>{statusBadge(c.status)}</td>
-                <td style={{ padding: "14px 20px" }}>
-                  <div style={{ display: "flex", gap: 8 }}>
-                    <Btn small onClick={() => openEdit(c)} variant="ghost">✏️ Edit</Btn>
-                    <Btn small danger onClick={() => setConfirm({ id: c.id })}>🗑 Delete</Btn>
-                  </div>
-                </td>
+      {/* Desktop table */}
+      <div className="hidden lg:block">
+        <TableWrapper>
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-white/[0.07]">
+                {["Icon", "Name", "Products", "Status", "Actions"].map(h => (
+                  <th key={h} className="px-5 py-3.5 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-white/[0.07]">
+              {cats.map(c => (
+                <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
+                  <td className="px-5 py-4 text-2xl">{c.icon}</td>
+                  <td className="px-5 py-4 font-semibold text-gray-100">{c.name}</td>
+                  <td className="px-5 py-4 text-gray-400">{c.productCount}</td>
+                  <td className="px-5 py-4"><StatusBadge status={c.status} /></td>
+                  <td className="px-5 py-4">
+                    <div className="flex gap-2">
+                      <Btn small onClick={() => openEdit(c)} variant="ghost">✏️ Edit</Btn>
+                      <Btn small variant="danger" onClick={() => setConfirm({ id: c.id })}>🗑 Delete</Btn>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableWrapper>
       </div>
 
-      {/* Add / Edit Modal */}
       {modal && (
-        <Modal
-          title={modal === "add" ? "Add Category" : "Edit Category"}
-          onClose={() => setModal(null)}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <Input label="Category Name" name="name" value={form.name} onChange={handleChange} placeholder="e.g. Electronics" />
-            <Input label="Icon (emoji)" name="icon" value={form.icon} onChange={handleChange} placeholder="e.g. ⚡" />
-            <Input label="Status" name="status" value={form.status} onChange={handleChange} options={["Active", "Inactive"]} />
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
+        <Modal title={modal === "add" ? "Add Category" : "Edit Category"} onClose={() => setModal(null)}>
+          <div className="flex flex-col gap-4">
+            <Input label="Category Name" name="name" value={form.name} onChange={onChange} placeholder="e.g. Electronics" />
+            <Input label="Icon (emoji)" name="icon" value={form.icon} onChange={onChange} placeholder="e.g. ⚡" />
+            <Input label="Status" name="status" value={form.status} onChange={onChange} options={["Active", "Inactive"]} />
+            <div className="flex gap-3 justify-end mt-2">
               <Btn onClick={() => setModal(null)} variant="ghost">Cancel</Btn>
               <Btn onClick={save}>Save</Btn>
             </div>
@@ -143,11 +102,10 @@ const Categories: React.FC = () => {
         </Modal>
       )}
 
-      {/* Delete Confirm */}
       {confirm && (
         <ConfirmModal
-          message="Are you sure you want to delete this category? This action cannot be undone."
-          onConfirm={confirmDelete}
+          message="Are you sure you want to delete this category? This cannot be undone."
+          onConfirm={() => { setCats(p => p.filter(c => c.id !== confirm.id)); setConfirm(null); }}
           onClose={() => setConfirm(null)}
         />
       )}

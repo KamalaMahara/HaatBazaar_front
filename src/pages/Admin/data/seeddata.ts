@@ -1,4 +1,39 @@
-import type { Category, Product, User, Payment } from "../types";
+export interface Category {
+  id: number;
+  name: string;
+  icon: string;
+  productCount: number;
+  status: "Active" | "Inactive";
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  category: string;
+  price: number;
+  stock: number;
+  status: "Active" | "Inactive" | "Out of Stock";
+  image: string;
+}
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: "Admin" | "Customer";
+  orders: number;
+  joined: string;
+  status: "Active" | "Banned";
+}
+
+export interface Payment {
+  id: string;
+  user: string;
+  amount: number;
+  method: "Khalti" | "eSewa" | "COD";
+  date: string;
+  status: "Completed" | "Pending" | "Failed" | "Refunded";
+}
 
 export const seedCategories: Category[] = [
   { id: 1, name: "Electronics", icon: "⚡", productCount: 24, status: "Active" },
