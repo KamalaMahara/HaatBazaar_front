@@ -61,10 +61,10 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onNavigate, onClose }) => {
       <div className="border-t border-white/[0.07] pt-5 mt-4">
         <div className="flex items-center gap-3 px-2">
           <div className="w-9 h-9 rounded-full bg-amber-500/15 flex items-center justify-center text-amber-500 font-extrabold text-sm shrink-0">
-            BP
+            KM
           </div>
           <div>
-            <p className="text-sm font-bold text-gray-100">Bikash Poudel</p>
+            <p className="text-sm font-bold text-gray-100">Kmla Mahara</p>
             <p className="text-[11px] text-gray-500">Administrator</p>
           </div>
         </div>

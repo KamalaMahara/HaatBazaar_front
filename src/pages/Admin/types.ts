@@ -1,4 +1,5 @@
 export interface Category {
+  categoryName: any;
   id: number;
   name: string;
   icon: string;

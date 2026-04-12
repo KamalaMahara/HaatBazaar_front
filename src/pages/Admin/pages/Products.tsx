@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { seedProducts, seedCategories, } from "../data/seeddata";
-import type { Product } from "../types";
+import type { Product } from "../types"
 import { Btn, Input, Modal, ConfirmModal, StatusBadge, SectionHeader, TableWrapper } from "../components/UI";
 
 type ProductForm = { id?: number; name: string; category: string; price: string | number; stock: string | number; status: Product["status"]; image: string; };
-const EMPTY: ProductForm = { name: "", category: "Electronics", price: "", stock: "", status: "Active", image: "📦" };
+const EMPTY: ProductForm = { name: "", category: "Electronics", price: "", stock: "", status: "Active", image: "" };
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(seedProducts);
