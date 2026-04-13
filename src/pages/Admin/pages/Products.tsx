@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { seedProducts, seedCategories, } from "../data/seeddata";
 import type { Product } from "../types"
-import { Btn, Input, Modal, ConfirmModal, StatusBadge, SectionHeader, TableWrapper } from "../components/UI";
+import { Btn, Input, Modal, ConfirmModal, SectionHeader, TableWrapper } from "../components/UI";
 
-type ProductForm = { id?: number; name: string; category: string; price: string | number; stock: string | number; status: Product["status"]; image: string; };
-const EMPTY: ProductForm = { name: "", category: "Electronics", price: "", stock: "", status: "Active", image: "" };
+type ProductForm = { id?: number; name: string; category: string; price: string | number; stock: string | number; };
+const EMPTY: ProductForm = { name: "", category: "Electronics", price: "", stock: "" };
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>(seedProducts);
@@ -52,12 +52,12 @@ const Products: React.FC = () => {
         {filtered.map(p => (
           <div key={p.id} className="bg-gray-800 rounded-2xl border border-white/[0.07] p-4">
             <div className="flex items-start gap-3 mb-3">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/15 flex items-center justify-center text-2xl shrink-0">{p.image}</div>
+
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-gray-100 truncate">{p.name}</p>
                 <p className="text-xs text-gray-400 mt-0.5">{p.category}</p>
               </div>
-              <StatusBadge status={p.status} />
+
             </div>
             <div className="grid grid-cols-2 gap-2 text-sm mb-3">
               <div>
@@ -84,7 +84,7 @@ const Products: React.FC = () => {
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-white/[0.07]">
-                {["Product", "Category", "Price", "Stock", "Status", "Actions"].map(h => (
+                {["Product", "Category", "Price", "Stock", , "Actions"].map(h => (
                   <th key={h} className="px-5 py-3.5 text-left text-[11px] font-bold text-gray-400 uppercase tracking-widest">{h}</th>
                 ))}
               </tr>
@@ -94,14 +94,14 @@ const Products: React.FC = () => {
                 <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-500/15 flex items-center justify-center text-xl shrink-0">{p.image}</div>
+
                       <span className="font-semibold text-gray-100 text-sm">{p.name}</span>
                     </div>
                   </td>
                   <td className="px-5 py-4 text-gray-400 text-sm">{p.category}</td>
                   <td className="px-5 py-4 font-bold text-amber-500 text-sm">Rs. {p.price.toLocaleString()}</td>
                   <td className={`px-5 py-4 text-sm font-medium ${p.stock === 0 ? "text-red-400" : "text-gray-100"}`}>{p.stock}</td>
-                  <td className="px-5 py-4"><StatusBadge status={p.status} /></td>
+
                   <td className="px-5 py-4">
                     <div className="flex gap-2">
                       <Btn small onClick={() => openEdit(p)} variant="ghost">✏️ Edit</Btn>
@@ -127,8 +127,7 @@ const Products: React.FC = () => {
               <Input label="Stock" name="stock" value={form.stock} onChange={onChange} type="number" placeholder="50" />
             </div>
             <Input label="Category" name="category" value={form.category} onChange={onChange} options={seedCategories.map(c => c.name)} />
-            <Input label="Image (emoji)" name="image" value={form.image} onChange={onChange} placeholder="e.g. 📱" />
-            <Input label="Status" name="status" value={form.status} onChange={onChange} options={["Active", "Inactive", "Out of Stock"]} />
+
             <div className="flex gap-3 justify-end mt-2">
               <Btn onClick={() => setModal(null)} variant="ghost">Cancel</Btn>
               <Btn onClick={save}>Save</Btn>
