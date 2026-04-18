@@ -15,6 +15,8 @@ import ResetPassword from "./pages/user/ResetPassword"
 import MyOrderDetail from "./pages/my-order-detail/MyOrderDetail"
 
 import AdminDashboard from "./pages/Admin/AdminDashboard"
+import Customer from "./pages/Admin/pages/Users"
+import Products from "./pages/Admin/pages/Products"
 
 
 
@@ -42,6 +44,9 @@ function App() {
           <Route path="/my-orders" element={<MyOrders />} />
           <Route path="/my-orders/:id" element={<MyOrderDetail />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/categories" element={<Categories />} />
+          <Route path="/admin/users" element={<Customer />} />
+          <Route path="/admin/products" element={<Products />} />
 
         </Routes>
       </BrowserRouter>

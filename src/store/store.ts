@@ -4,7 +4,7 @@ import productSlice from "./productSlice";
 import cartSlice from "./cartSlice";
 import ordersReducer from "./checkoutSlice";
 import { userSlice } from "./adminUserSlice";
-
+import adminProductReducer from "./adminProductSlice"; // ← ADD THIS IMPORT
 
 
 
@@ -14,7 +14,8 @@ const store = configureStore({
     products: productSlice,
     cart: cartSlice,
     orders: ordersReducer,
-    users: userSlice.reducer
+    users: userSlice.reducer,
+    adminProducts: adminProductReducer, // ← CHANGE THIS
   }
 })
 

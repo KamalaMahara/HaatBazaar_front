@@ -1,8 +1,8 @@
 // pages/Admin/Customer.tsx
-import React, { useEffect, useState } from "react";
-import { Badge, Btn, ConfirmModal, SectionHeader, TableWrapper } from "../components/UI";
+import React, { useEffect } from "react";
+import { Badge, SectionHeader, TableWrapper } from "../components/UI";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { fetchUsers, deleteUsers } from "../../../store/adminUserSlice";
+import { fetchUsers, } from "../../../store/adminUserSlice";
 import { Status } from "../../../globals/types/types";
 
 const Customer: React.FC = () => {
@@ -10,18 +10,14 @@ const Customer: React.FC = () => {
 
   const { users, status } = useAppSelector((store) => store.users);
 
-  const [confirm, setConfirm] = useState<{ id: string } | null>(null);
 
-  // ✅ fetch users from backend
+
+  // fetch users from backend
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  // ✅ delete handler
-  const handleDelete = (id: string) => {
-    dispatch(deleteUsers(id));
-    setConfirm(null);
-  };
+
 
   return (
     <div>
@@ -30,13 +26,13 @@ const Customer: React.FC = () => {
         subtitle={`${users.length} registered users`}
       />
 
-      {/* 🔵 Loading */}
+      {/* Loading */}
       {status === Status.LOADING && <p className="text-gray-400">Loading...</p>}
 
-      {/* 🔴 Error */}
+      {/*  Error */}
       {status === Status.LOADING && <p className="text-red-500">Failed to load users</p>}
 
-      {/* ✅ Mobile View */}
+      {/* Mobile View */}
       <div className="flex flex-col gap-3 lg:hidden">
         {users.map((u) => (
           <div
@@ -53,26 +49,18 @@ const Customer: React.FC = () => {
               />
             </div>
 
-            <div className="flex gap-2 mt-4">
-              <Btn
-                small
-                variant="danger"
-                onClick={() => setConfirm({ id: u.id })}
-              >
-                🗑 Delete
-              </Btn>
-            </div>
+
           </div>
         ))}
       </div>
 
-      {/* ✅ Desktop Table */}
+      {/*  Desktop Table */}
       <div className="hidden lg:block">
         <TableWrapper>
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-white/[0.07]">
-                {["User", "Email", "Role", "Actions"].map((h) => (
+                {["User", "Email", "Role"].map((h) => (
                   <th
                     key={h}
                     className="px-5 py-3 text-left text-xs text-gray-400 uppercase"
@@ -94,15 +82,7 @@ const Customer: React.FC = () => {
                       variant={u.role === "Admin" ? "purple" : "info"}
                     />
                   </td>
-                  <td className="px-5 py-4">
-                    <Btn
-                      small
-                      variant="danger"
-                      onClick={() => setConfirm({ id: u.id })}
-                    >
-                      🗑
-                    </Btn>
-                  </td>
+
                 </tr>
               ))}
             </tbody>
@@ -110,14 +90,7 @@ const Customer: React.FC = () => {
         </TableWrapper>
       </div>
 
-      {/* ✅ Confirm Modal */}
-      {confirm && (
-        <ConfirmModal
-          message="Are you sure you want to delete this user?"
-          onConfirm={() => handleDelete(confirm.id)}
-          onClose={() => setConfirm(null)}
-        />
-      )}
+
     </div>
   );
 };

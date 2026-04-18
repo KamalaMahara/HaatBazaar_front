@@ -1,20 +1,21 @@
 import type { Status } from "../../../globals/types/types";
 
 
-interface ICategory {
+export interface ICategory {
   id: string,
   categoryName: string
 }
 
 
 export interface IProduct {
+  status: string;
   id: string,
   productName: string,
   productDescription: string,
   productPrice: number | null,
   productTotalStock: number,
   productDiscount: number,
-  productImageUrl: string,
+  productImageUrl: string | null,
   createdAt: string,
   updatedAt: string,
   categoryId: string,

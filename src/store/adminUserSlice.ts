@@ -57,19 +57,3 @@ export function fetchUsers() {
 }
 
 
-export function deleteUsers(id: string) {
-  return async function deleteUsersThunk(dispatch: AppDispatch) {
-    try {
-      const response = await APIWITHTOKEN.delete("/users/" + id);
-
-      if (response.status === 200) {
-        dispatch(fetchUsers());
-      } else {
-        dispatch(setStatus(Status.ERROR));
-      }
-    } catch (error) {
-      dispatch(setStatus(Status.ERROR));
-      console.log(error);
-    }
-  };
-}
