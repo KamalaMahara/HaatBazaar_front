@@ -88,7 +88,7 @@ export function loginUser(data: ILoginUser) {
         dispatch(setStatus(Status.SUCCESS));
         if (response.data.token) {
           localStorage.setItem("tokenHoYo", response.data.token);
-          localStorage.setItem("roleHoYo", response.data.role || "admin" || "customer");
+          localStorage.setItem("roleHoYo", response.data.role);
           localStorage.setItem("usernameHoYo", response.data.username || "");
           dispatch(setUser({
             username: response.data.username || "",
