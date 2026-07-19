@@ -4,6 +4,8 @@ import { Link } from 'react-router';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { fetchCartItems } from '../../../../store/cartSlice';
 import logo from "../../../../assets/logo.png";
+import { useNavigate } from 'react-router-dom';
+import { logout } from "../../../../store/authSlice"
 
 
 
@@ -13,6 +15,12 @@ const Navbar = () => {
   const localStorageToken = localStorage.getItem("tokenHoYo");
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await dispatch(logout());
+    navigate('/login');
+  };
 
   useEffect(() => {
     setIsLoggedIn(!!reduxToken || !!localStorageToken);
@@ -84,9 +92,9 @@ const Navbar = () => {
                   </div>
 
                   {/* Logout button */}
-                  <Link to='/logout'>
-                    <button className="text-sm font-medium hover:text-[#F59E0B]">Logout</button>
-                  </Link>
+                  <button onClick={handleLogout} className="text-sm font-medium hover:text-[#F59E0B]">
+                    Logout
+                  </button>
                 </>
               ) : (
                 <>

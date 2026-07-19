@@ -3,7 +3,7 @@ import { Status } from "../globals/types/types";
 import type { ICartInitialState, ICartItem, ICartUpdateItem } from "../pages/cart/types";
 import type { AppDispatch } from "./store";
 import { APIWITHTOKEN } from "../http";
-import { setStatus } from "./authSlice";
+
 
 
 
@@ -74,12 +74,12 @@ export function fetchCartItems() {
         dispatch(setCartStatus(Status.SUCCESS))
       }
       else {
-        dispatch(setStatus(Status.ERROR))
+        dispatch(setCartStatus(Status.ERROR))
       }
     }
     catch (error) {
       console.log(error)
-      dispatch(setStatus(Status.ERROR))
+      dispatch(setCartStatus(Status.ERROR))
     }
 
 
@@ -94,12 +94,12 @@ export function handleCartItemUpdate(productId: string, quantity: number) {
         dispatch(setCartStatus(Status.SUCCESS))
       }
       else {
-        dispatch(setStatus(Status.ERROR))
+        dispatch(setCartStatus(Status.ERROR))
       }
     }
     catch (error) {
       console.log(error)
-      dispatch(setStatus(Status.ERROR))
+      dispatch(setCartStatus(Status.ERROR))
     }
   }
 }
@@ -112,12 +112,12 @@ export function handleCartItemDelete(productId: string) {
         dispatch(setCartStatus(Status.SUCCESS))
       }
       else {
-        dispatch(setStatus(Status.ERROR))
+        dispatch(setCartStatus(Status.ERROR))
       }
     }
     catch (error) {
       console.log(error)
-      dispatch(setStatus(Status.ERROR))
+      dispatch(setCartStatus(Status.ERROR))
     }
   }
 }

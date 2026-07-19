@@ -2,8 +2,6 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { IProduct, IProducts } from "../pages/product/types/types";
 import { Status } from "../globals/types/types";
 import type { AppDispatch } from "./store";
-
-import { setStatus } from "./authSlice";
 import type { RootState } from "./store";
 import { API } from "../http";
 
@@ -50,11 +48,11 @@ export function fetchproducts() {
         dispatch(setProducts(response.data.data))
       }
       else {
-        dispatch(setStatus(Status.ERROR))
+        dispatch(setProductStatus(Status.ERROR))
       }
     } catch (error) {
       console.log(error)
-      dispatch(setStatus(Status.ERROR))
+      dispatch(setProductStatus(Status.ERROR))
     }
   }
 }
@@ -77,11 +75,11 @@ export function fetchSingleProduct(id: string) {
           dispatch(setSingleProduct(response.data.data[0]));
           console.log("Fetched product:", response.data.data[0]);
         } else {
-          dispatch(setStatus(Status.ERROR));
+          dispatch(setProductStatus(Status.ERROR));
         }
       } catch (error) {
         console.log(error);
-        dispatch(setStatus(Status.ERROR));
+        dispatch(setProductStatus(Status.ERROR));
       }
     }
 

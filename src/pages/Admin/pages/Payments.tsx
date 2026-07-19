@@ -1,16 +1,58 @@
-import React, { useState } from "react";
-import { seedPayments } from "../data/seeddata";
-import type { Payment } from "../types";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { fetchAdminOrders } from "../../../store/adminOrderSlice";
+import { Status } from "../../../globals/types/types";
 import { StatusBadge, MethodBadge, SectionHeader, TableWrapper } from "../components/UI";
 
-const STATUSES = ["All", "Completed", "Pending", "Failed", "Refunded"];
+const STATUSES = ["All", "Completed", "Pending", "Failed"];
 
 const Payments: React.FC = () => {
-  const [payments] = useState<Payment[]>(seedPayments);
+  const dispatch = useAppDispatch();
+  const { orders, status } = useAppSelector((store) => store.adminOrders);
   const [filter, setFilter] = useState("All");
 
-  const filtered = filter === "All" ? payments : payments.filter(p => p.status === filter);
-  const total = payments.filter(p => p.status === "Completed").reduce((s, p) => s + p.amount, 0);
+  useEffect(() => {
+    dispatch(fetchAdminOrders());
+  }, [dispatch]);
+
+  if (status === Status.LOADING) {
+    return (
+      <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
+        <div className="w-5 h-5 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mr-3" />
+        Loading payments...
+      </div>
+    );
+  }
+
+  if (status === Status.ERROR) {
+    return (
+      <div className="flex items-center justify-center py-20 text-red-400 text-sm">
+        Failed to load payment records.
+      </div>
+    );
+  }
+
+  // Map orders to payment structure
+  const mappedPayments = orders
+    .filter((o) => o.Payment !== undefined)
+    .map((o) => {
+      const isPaid = o.Payment?.paymentstatus?.toLowerCase() === "paid";
+      return {
+        id: `ORD-${o.id.slice(-6).toUpperCase()}`,
+        user: `${o.firstName} ${o.lastName}`,
+        amount: o.totalAmount,
+        method: o.Payment?.paymentMethod || "COD",
+        date: new Date(o.createdAt).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+        }),
+        status: isPaid ? "Completed" : "Pending",
+      };
+    });
+
+  const filtered = filter === "All" ? mappedPayments : mappedPayments.filter((p) => p.status === filter);
+  const total = mappedPayments.filter((p) => p.status === "Completed").reduce((s, p) => s + p.amount, 0);
 
   return (
     <div>
@@ -38,8 +80,8 @@ const Payments: React.FC = () => {
 
       {/* Mobile cards */}
       <div className="flex flex-col gap-3 lg:hidden">
-        {filtered.map(p => (
-          <div key={p.id} className="bg-gray-800 rounded-2xl border border-white/[0.07] p-4">
+        {filtered.map((p, idx) => (
+          <div key={idx} className="bg-gray-800 rounded-2xl border border-white/[0.07] p-4">
             <div className="flex items-center justify-between mb-3">
               <span className="font-bold text-amber-500 text-sm">{p.id}</span>
               <StatusBadge status={p.status} />
@@ -76,8 +118,8 @@ const Payments: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/[0.07]">
-              {filtered.map(p => (
-                <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
+              {filtered.map((p, idx) => (
+                <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-5 py-4 font-bold text-amber-500 text-sm">{p.id}</td>
                   <td className="px-5 py-4 text-gray-100 text-sm">{p.user}</td>
                   <td className="px-5 py-4 font-bold text-gray-100 text-sm">Rs. {p.amount.toLocaleString()}</td>

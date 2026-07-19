@@ -30,7 +30,7 @@ const Customer: React.FC = () => {
       {status === Status.LOADING && <p className="text-gray-400">Loading...</p>}
 
       {/*  Error */}
-      {status === Status.LOADING && <p className="text-red-500">Failed to load users</p>}
+      {status === Status.ERROR && <p className="text-red-500">Failed to load users</p>}
 
       {/* Mobile View */}
       <div className="flex flex-col gap-3 lg:hidden">

@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { StatusBadge } from "../components/UI";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { fetchProducts } from "../../../store/adminProductSlice";
+import { fetchProducts, addProduct, updateProduct, deleteProduct } from "../../../store/adminProductSlice";
 import { Status } from "../../../globals/types/types";
+import { API } from "../../../http";
 
 type ProductForm = {
   id?: string;
   name: string;
-  category: string;
+  category: string; // will hold selected categoryId
+  description: string;
   price: string | number;
   stock: string | number;
   status: "Active" | "Inactive" | "Out of Stock";
@@ -18,6 +20,7 @@ type ProductForm = {
 const EMPTY: ProductForm = {
   name: "",
   category: "",
+  description: "",
   price: "",
   stock: "",
   status: "Active",
@@ -31,9 +34,10 @@ const ProductImage: React.FC<{ src: string | null; name: string; size?: string }
   size = "w-9 h-9",
 }) => {
   if (src) {
+    const fullSrc = src.startsWith("http") ? src : `http://localhost:8000/${src}`;
     return (
       <img
-        src={src}
+        src={fullSrc}
         alt={name}
         className={`${size} rounded-lg object-cover flex-shrink-0`}
       />
@@ -58,16 +62,31 @@ const Products: React.FC = () => {
   const [modal, setModal] = useState<"add" | "edit" | null>(null);
   const [form, setForm] = useState<ProductForm>(EMPTY);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ id: string; categoryName: string }[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
+  useEffect(() => {
+    const fetchCats = async () => {
+      try {
+        const res = await API.get("/category");
+        setCategories(res.data.data ?? []);
+      } catch (err) {
+        console.error("Failed to load categories", err);
+      }
+    };
+    fetchCats();
+  }, []);
+
   const mappedProducts = products.map((p) => ({
     id: p.id,
     name: p.productName,
+    categoryId: p.categoryId,
     category: p.category?.categoryName || "Unknown",
+    description: p.productDescription || "",
     price: p.productPrice ?? null,
     stock: p.productTotalStock,
     image: p.productImageUrl,
@@ -83,7 +102,7 @@ const Products: React.FC = () => {
   );
 
   const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
   };
@@ -107,7 +126,8 @@ const Products: React.FC = () => {
     setForm({
       id: p.id,
       name: p.name,
-      category: p.category,
+      category: p.categoryId,
+      description: p.description,
       price: p.price ?? "",
       stock: p.stock,
       status: p.status,
@@ -122,6 +142,39 @@ const Products: React.FC = () => {
     setModal(null);
     setForm(EMPTY);
     setImagePreview(null);
+  };
+
+  const handleSave = () => {
+    if (!form.name || !form.price || form.stock === "" || !form.category || !form.description) {
+      alert("Please fill in name, price, stock, category and description");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("productName", form.name);
+    formData.append("productPrice", String(form.price));
+    formData.append("productTotalStock", String(form.stock));
+    formData.append("productDiscount", "0");
+    formData.append("categoryId", form.category);
+    formData.append("productDescription", form.description);
+
+    if (form.imageFile) {
+      formData.append("productImage", form.imageFile);
+    }
+
+    if (modal === "add") {
+      dispatch(addProduct(formData));
+    } else if (modal === "edit" && form.id) {
+      dispatch(updateProduct(form.id, formData));
+    }
+
+    closeModal();
+  };
+
+  const handleDeleteProduct = (id: string) => {
+    if (window.confirm("Are you sure you want to delete this product?")) {
+      dispatch(deleteProduct(id));
+    }
   };
 
   if (status === Status.LOADING) {
@@ -232,7 +285,10 @@ const Products: React.FC = () => {
                     >
                       Edit
                     </button>
-                    <button className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-medium transition-colors">
+                    <button
+                      onClick={() => handleDeleteProduct(p.id)}
+                      className="px-3 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 text-xs font-medium transition-colors"
+                    >
                       Delete
                     </button>
                   </div>
@@ -253,7 +309,7 @@ const Products: React.FC = () => {
       {/* MODAL */}
       {modal && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl">
+          <div className="bg-gray-800 border border-white/10 rounded-2xl w-full max-w-md shadow-2xl overflow-y-auto max-h-[90vh]">
             {/* Modal Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10">
               <h2 className="text-white font-bold text-base">
@@ -261,7 +317,7 @@ const Products: React.FC = () => {
               </h2>
               <button
                 onClick={closeModal}
-                className="text-gray-500 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-white transition-colors border-none bg-transparent cursor-pointer text-lg"
               >
                 ✕
               </button>
@@ -279,7 +335,7 @@ const Products: React.FC = () => {
                 >
                   {imagePreview ? (
                     <img
-                      src={imagePreview}
+                      src={imagePreview.startsWith("data:") || imagePreview.startsWith("blob:") ? imagePreview : `http://localhost:8000/${imagePreview}`}
                       alt="preview"
                       className="w-16 h-16 rounded-lg object-cover"
                     />
@@ -333,19 +389,39 @@ const Products: React.FC = () => {
                 />
               </div>
 
+              {/* Description */}
+              <div>
+                <label className="text-xs text-gray-400 mb-1.5 block">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={onChange}
+                  placeholder="Enter product description..."
+                  rows={3}
+                  className="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50 resize-none"
+                />
+              </div>
+
               {/* Category */}
               <div>
                 <label className="text-xs text-gray-400 mb-1.5 block">
                   Category
                 </label>
-                <input
-                  type="text"
+                <select
                   name="category"
                   value={form.category}
                   onChange={onChange}
-                  placeholder="e.g. Electronics"
-                  className="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-amber-500/50"
-                />
+                  className="w-full bg-gray-900 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500/50"
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.categoryName}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               {/* Price & Stock row */}
@@ -400,11 +476,14 @@ const Products: React.FC = () => {
             <div className="flex gap-3 px-6 pb-6">
               <button
                 onClick={closeModal}
-                className="flex-1 bg-gray-700 hover:bg-gray-600 transition-colors py-2.5 rounded-xl text-white text-sm font-medium"
+                className="flex-1 bg-gray-700 hover:bg-gray-600 transition-colors py-2.5 rounded-xl text-white text-sm font-medium border-none cursor-pointer"
               >
                 Cancel
               </button>
-              <button className="flex-1 bg-amber-500 hover:bg-amber-400 transition-colors py-2.5 rounded-xl text-black text-sm font-bold">
+              <button
+                onClick={handleSave}
+                className="flex-1 bg-amber-500 hover:bg-amber-400 transition-colors py-2.5 rounded-xl text-black text-sm font-bold border-none cursor-pointer"
+              >
                 {modal === "add" ? "Add Product" : "Save Changes"}
               </button>
             </div>

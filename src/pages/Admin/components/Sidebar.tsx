@@ -1,9 +1,13 @@
 import React from "react";
+import { useAppDispatch } from "../../../store/hooks";
+import { logout } from "../../../store/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const NAV = [
   { key: "overview", label: "Overview", icon: "📊" },
   { key: "categories", label: "Categories", icon: "🏷️" },
   { key: "products", label: "Products", icon: "📦" },
+  { key: "orders", label: "Orders", icon: "🛒" },
   { key: "payments", label: "Payments", icon: "💳" },
   { key: "users", label: "Users", icon: "👥" },
 ];
@@ -15,17 +19,29 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ active, onNavigate, onClose }) => {
-  const handleNav = (key: string) => { onNavigate(key); onClose?.(); };
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleNav = (key: string) => {
+    onNavigate(key);
+    onClose?.();
+  };
+
+  const handleLogout = async () => {
+    if (window.confirm("Are you sure you want to log out?")) {
+      await dispatch(logout());
+      navigate("/login");
+    }
+  };
 
   return (
     <aside className="flex flex-col h-full w-full bg-gray-800 border-r border-white/[0.07] px-3 py-7">
 
       {/* Logo */}
       <div className="px-3 mb-8">
-        {/* Flex container to align logo and text */}
         <div className="flex items-center gap-2">
           <img
-            src="src\assets\logo.png"
+            src="/src/assets/logo.png"
             alt="HaatBazaar Logo"
             className="h-8 w-8 object-contain"
           />
@@ -57,17 +73,25 @@ const Sidebar: React.FC<SidebarProps> = ({ active, onNavigate, onClose }) => {
         ))}
       </nav>
 
-      {/* Admin profile */}
-      <div className="border-t border-white/[0.07] pt-5 mt-4">
-        <div className="flex items-center gap-3 px-2">
-          <div className="w-9 h-9 rounded-full bg-amber-500/15 flex items-center justify-center text-amber-500 font-extrabold text-sm shrink-0">
-            KM
-          </div>
-          <div>
-            <p className="text-sm font-bold text-gray-100">Kmla Mahara</p>
-            <p className="text-[11px] text-gray-500">Administrator</p>
+      {/* Admin profile & Logout */}
+      <div className="border-t border-white/[0.07] pt-5 mt-4 flex flex-col gap-3">
+        <div className="flex items-center justify-between px-2">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-amber-500/15 flex items-center justify-center text-amber-500 font-extrabold text-sm shrink-0">
+              KM
+            </div>
+            <div>
+              <p className="text-sm font-bold text-gray-100">Kmla Mahara</p>
+              <p className="text-[11px] text-gray-500">Administrator</p>
+            </div>
           </div>
         </div>
+        <button
+          onClick={handleLogout}
+          className="mx-2 px-4 py-2 text-xs font-bold text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 rounded-xl transition-all cursor-pointer"
+        >
+          🚪 Log Out
+        </button>
       </div>
     </aside>
   );

@@ -5,6 +5,7 @@ import cartSlice from "./cartSlice";
 import ordersReducer from "./checkoutSlice";
 import { userSlice } from "./adminUserSlice";
 import adminProductReducer from "./adminProductSlice"; // ← ADD THIS IMPORT
+import adminOrderReducer from "./adminOrderSlice";
 
 
 
@@ -16,6 +17,7 @@ const store = configureStore({
     orders: ordersReducer,
     users: userSlice.reducer,
     adminProducts: adminProductReducer, // ← CHANGE THIS
+    adminOrders: adminOrderReducer,
   }
 })
 

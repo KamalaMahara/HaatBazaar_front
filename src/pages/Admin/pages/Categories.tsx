@@ -1,9 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import type { Category } from "../types";
 import { Btn, Input, Modal, ConfirmModal, SectionHeader, TableWrapper } from "../components/UI";
-import axios from "axios";
-
-const API = "http://localhost:8000/category";
+import { API, APIWITHTOKEN } from "../../../http";
 
 type CategoryForm = { id?: number; categoryName: string; };
 const EMPTY: CategoryForm = { categoryName: "", };
@@ -22,9 +20,8 @@ const Categories: React.FC = () => {
   const fetchCategories = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await fetch(API);
-      const json = await res.json();
-      setCats(json.data ?? []);
+      const res = await API.get("/category");
+      setCats(res.data.data ?? []);
     } catch (err) {
       setError("Failed to load categories.");
     } finally {
@@ -72,27 +69,11 @@ const Categories: React.FC = () => {
   // Save (Add or Edit) 
   const save = async () => {
     if (!validate()) return;
-    const token = localStorage.getItem("token");
-    console.log("TOKEN:", token);
     try {
       if (modal === "add") {
-        await fetch(API, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ categoryName: form.categoryName.trim() }),
-        });
+        await APIWITHTOKEN.post("/category", { categoryName: form.categoryName.trim() });
       } else {
-        await fetch(`${API}/${form.id}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ categoryName: form.categoryName.trim() }),
-        });
+        await APIWITHTOKEN.patch(`/category/${form.id}`, { categoryName: form.categoryName.trim() });
       }
       setModal(null);
       fetchCategories(); // re-fetch to sync with DB
@@ -101,17 +82,10 @@ const Categories: React.FC = () => {
     }
   };
 
-  //  Delete ─
+  //  Delete 
   const deleteCategory = async (id: number) => {
     try {
-      const token = localStorage.getItem("token");
-
-      const response = await axios.delete(API + "/" + id, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const response = await APIWITHTOKEN.delete(`/category/${id}`);
       if (response.status === 200) {
         setConfirm(null);
         fetchCategories();
@@ -123,7 +97,7 @@ const Categories: React.FC = () => {
     }
   };
 
-  // ─── Loading / Error states 
+  // Loading / Error states 
   if (loading) return (
     <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
       Loading categories...

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft, Mail, PhoneCall, Truck, MapPin, User, CreditCard, XCircle, AlertTriangle } from "lucide-react";
 import Navbar from "../../globals/types/components/Navbar/navbar";
-import { useAppSelector } from "../../store/hooks";
-import { useAppDispatch } from "../../store/hooks";
-import { updateOrderStatusToCancel } from "../../store/checkoutSlice";
+import { useAppSelector, useAppDispatch } from "../../store/hooks";
+import { updateOrderStatusToCancel, fetchMyOrders } from "../../store/checkoutSlice";
+import { APIWITHTOKEN } from "../../http";
 
 
 
@@ -30,6 +30,12 @@ const MyOrderDetail: React.FC = () => {
   const [cancelNote, setCancelNote] = useState("");
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelSuccess, setCancelSuccess] = useState(false);
+
+  useEffect(() => {
+    if (items.length === 0) {
+      dispatch(fetchMyOrders());
+    }
+  }, [items, dispatch]);
 
   useEffect(() => {
     const found = items
@@ -67,15 +73,25 @@ const MyOrderDetail: React.FC = () => {
     parentOrder?.orderStatus?.toLowerCase()
   );
   const dispatch = useAppDispatch();
+  const [cancelError, setCancelError] = useState("");
   const handleCancelSubmit = async () => {
     if (!cancelReason) return;
     setIsCancelling(true);
-    // Replace with actual API call
-    await new Promise((res) => setTimeout(res, 1500));
-    dispatch(updateOrderStatusToCancel({ orderId: parentOrder.id }));
-    setIsCancelling(false);
-    setCancelSuccess(true);
-    setShowCancelModal(false);
+    setCancelError("");
+    try {
+      const response = await APIWITHTOKEN.patch(`/order/cancel-order/${parentOrder.id}`);
+      if (response.status === 200) {
+        dispatch(updateOrderStatusToCancel({ orderId: parentOrder.id }));
+        setCancelSuccess(true);
+        setShowCancelModal(false);
+      } else {
+        setCancelError("Failed to cancel order.");
+      }
+    } catch (err: any) {
+      setCancelError(err.response?.data?.message || "Failed to cancel order.");
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   return (

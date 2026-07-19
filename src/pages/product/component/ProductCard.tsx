@@ -67,7 +67,7 @@ const ProductCard: React.FC<ICardProps> = ({ product }) => {
                 : "Price N/A"}
             </span>
             <span className="text-[10px] text-gray-500 font-medium uppercase">
-              VAT Incl.
+              /- VAT Incl.
             </span>
           </div>
         </div>
