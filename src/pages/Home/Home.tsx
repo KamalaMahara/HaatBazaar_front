@@ -6,6 +6,7 @@ import ProductPage from "../product/Product"
 import Feature from "./feature"
 
 import ModernDarkHero from "./Hero"
+import PaymentSection from "./PaymentSection"
 
 
 const Home = () => {
@@ -17,6 +18,7 @@ const Home = () => {
       <Feature />
       <Categories />
       <ProductPage />
+      <PaymentSection />
       <Footer />
 
 

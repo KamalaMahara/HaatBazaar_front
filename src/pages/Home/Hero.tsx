@@ -96,7 +96,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* Horizontal Wide Card */}
-          <div className="col-span-4 row-span-2 bg-[#F9FAFB] text-[#111827] rounded-3xl p-6 flex items-center justify-between group cursor-pointer hover:bg-[#F59E0B] transition-colors duration-500">
+          <div className="col-span-4 row-span-2 bg-[#F9FAFB] text-[#111827] rounded-3xl p-6 flex items-center justify-between group cursor-pointer bg-[#F59E0B] transition-colors duration-500">
 
             <div>
               <p className="text-[40px] font-black tracking-tighter leading-none italic uppercase">SALE  40% OFF</p>

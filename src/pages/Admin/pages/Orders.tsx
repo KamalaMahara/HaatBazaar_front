@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { fetchAdminOrders, updateAdminOrderStatus, deleteAdminOrder } from "../../../store/adminOrderSlice";
 import { Status } from "../../../globals/types/types";
-import { SectionHeader, TableWrapper, StatusBadge, Btn, ConfirmModal } from "../components/UI";
-import { Eye, Trash2, ArrowUpDown } from "lucide-react";
+import { SectionHeader, TableWrapper, Btn, ConfirmModal } from "../components/UI";
+import { Eye, Trash2 } from "lucide-react";
 
 const STATUS_OPTIONS = ["Pending", "Preparation", "Ontheway", "Delivered", "Cancelled"];
 
@@ -30,6 +30,10 @@ const Orders: React.FC = () => {
   };
 
   const filteredOrders = orders.filter((o) => {
+    console.log(o);
+    console.log(o.OrderDetail);
+    console.log(Array.isArray(o.OrderDetail));
+
     const term = search.toLowerCase();
     const matchesSearch =
       o.id.toLowerCase().includes(term) ||
@@ -245,6 +249,7 @@ const Orders: React.FC = () => {
                   <p><span className="text-gray-500 font-bold">Payment Method:</span> {o.Payment?.paymentMethod || "COD"} ({o.Payment?.paymentstatus || "Unpaid"})</p>
                   <div className="pt-2 border-t border-white/5 space-y-2">
                     {o.OrderDetail?.map((detail) => (
+
                       <div key={detail.id} className="flex justify-between">
                         <span>{detail.Product?.productName} (x{detail.quantity})</span>
                         <span className="text-amber-500">Rs. {((detail.Product?.productPrice || 0) * detail.quantity).toLocaleString()}</span>

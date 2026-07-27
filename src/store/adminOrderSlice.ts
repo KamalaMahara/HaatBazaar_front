@@ -72,6 +72,7 @@ export const { setOrders, setStatus, updateOrderStatusLocal, deleteOrderLocal } 
 export default adminOrderSlice.reducer;
 
 export function fetchAdminOrders() {
+
   return async (dispatch: AppDispatch) => {
     dispatch(setStatus(Status.LOADING));
     try {
