@@ -10,6 +10,7 @@ import MyCart from "./pages/cart/my-cart"
 import Checkout from "./pages/product/component/checkout/Checkout"
 import Categories from "./globals/types/components/categories/categories"
 import Navbar from "./globals/types/components/Navbar/navbar"
+import Footer from "./globals/types/components/footer/footer"
 import MyOrders from "./pages/my-orders/MyOrders"
 import ResetPassword from "./pages/user/ResetPassword"
 import MyOrderDetail from "./pages/my-order-detail/MyOrderDetail"
@@ -36,7 +37,7 @@ function App() {
           <Route path="/products" element={<> < Navbar /><ProductPage /></>} />
           <Route path="/products/:id" element={<SingleProduct />} />
           <Route path="/my-cart" element={<MyCart />} />
-          <Route path="/categories" element={<Categories />} />
+          <Route path="/categories" element={<> <Navbar /><Categories /><Footer /></>} />
 
           <Route path="/my-checkout" element={<Checkout />} />
           <Route path="/my-orders" element={<MyOrders />} />

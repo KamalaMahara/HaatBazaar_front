@@ -1,10 +1,11 @@
 export interface Category {
   categoryName: any;
-  id: number;
+  id: string | number;
   name: string;
   icon: string;
   productCount: number;
   status: "Active" | "Inactive";
+  categoryImageUrl?: string;
 }
 
 export interface Product {
