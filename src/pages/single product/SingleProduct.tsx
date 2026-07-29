@@ -145,7 +145,7 @@ const SingleProduct = () => {
                   </p>
                 </div>
                 <p className="text-4xl font-black text-[#F9FAFB] tracking-tight">
-                  ${product?.productPrice?.toFixed(2)}
+                  Rs {product?.productPrice?.toFixed(2)}
                 </p>
               </div>
 

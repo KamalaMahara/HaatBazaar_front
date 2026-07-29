@@ -6,6 +6,7 @@ import { API } from '../../../../http';
 interface CategoryData {
   id: string;
   categoryName: string;
+  categoryImageUrl?: string;
 }
 
 const categoryImages: Record<string, string> = {
@@ -54,8 +55,13 @@ const Categories: React.FC = () => {
     navigate('/categories');
   };
 
-  const getCategoryImage = (name: string) => {
-    const key = name.trim().toLowerCase();
+  const getCategoryImage = (cat: CategoryData) => {
+    if (cat.categoryImageUrl) {
+      return cat.categoryImageUrl.startsWith("http") 
+        ? cat.categoryImageUrl 
+        : `http://localhost:8000/${cat.categoryImageUrl}`;
+    }
+    const key = cat.categoryName.trim().toLowerCase();
     return categoryImages[key] || defaultImage;
   };
 
@@ -99,11 +105,12 @@ const Categories: React.FC = () => {
             {displayedCategories.map((cat) => (
               <div
                 key={cat.id}
+                onClick={() => navigate(`/products?category=${cat.id}&name=${encodeURIComponent(cat.categoryName)}`)}
                 className="group relative aspect-[3/4] overflow-hidden rounded-xl bg-gray-800 cursor-pointer shadow-2xl"
               >
                 {/* Image with Dark Grading */}
                 <img
-                  src={getCategoryImage(cat.categoryName)}
+                  src={getCategoryImage(cat)}
                   alt={cat.categoryName}
                   className="w-full h-full object-cover brightness-100 group-hover:grayscale-0 group-hover:brightness-100 group-hover:scale-110 transition-all duration-700 ease-in-out"
                 />

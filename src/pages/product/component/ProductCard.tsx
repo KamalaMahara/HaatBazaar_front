@@ -13,12 +13,22 @@ const ProductCard: React.FC<ICardProps> = ({ product }) => {
       <div className="group flex flex-col bg-transparent">
         {/* Image Container */}
         <div className="relative aspect-[4/5] bg-[#F9FAFB] rounded-2xl overflow-hidden mb-5">
-          <img
-            src={`http://localhost:8000/${product.productImageUrl}`}
-            alt={product.productName}
-            className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${product.productTotalStock === 0 ? 'opacity-30 grayscale' : 'opacity-100'
-              }`}
-          />
+          {product.productImageUrl && product.productImageUrl.trim() !== "" ? (
+            <img
+              src={product.productImageUrl.startsWith("http") ? product.productImageUrl : `http://localhost:8000/${product.productImageUrl}`}
+              alt={product.productName}
+              className={`w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 ${product.productTotalStock === 0 ? 'opacity-30 grayscale' : 'opacity-100'}`}
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
+              <span className="text-5xl font-black text-gray-300 uppercase">
+                {product.productName.charAt(0)}
+              </span>
+            </div>
+          )}
 
           {/* Stock Tag */}
           <div className="absolute top-4 left-4">
@@ -63,7 +73,7 @@ const ProductCard: React.FC<ICardProps> = ({ product }) => {
           <div className="flex items-baseline gap-2 pt-1">
             <span className="text-xl font-bold text-[#F9FAFB]">
               {product.productPrice !== null
-                ? `$${product.productPrice.toFixed(2)}`
+                ? `Rs${product.productPrice.toFixed(2)}`
                 : "Price N/A"}
             </span>
             <span className="text-[10px] text-gray-500 font-medium uppercase">

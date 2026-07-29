@@ -33,13 +33,23 @@ const ProductImage: React.FC<{ src: string | null; name: string; size?: string }
   name,
   size = "w-9 h-9",
 }) => {
-  if (src) {
+  if (src && src.trim() !== "") {
     const fullSrc = src.startsWith("http") ? src : `http://localhost:8000/${src}`;
     return (
       <img
         src={fullSrc}
         alt={name}
         className={`${size} rounded-lg object-cover flex-shrink-0`}
+        onError={(e) => {
+          // If image fails to load, replace with initial placeholder
+          const target = e.currentTarget as HTMLImageElement;
+          target.style.display = "none";
+          const parent = target.parentElement;
+          if (parent) {
+            parent.innerHTML = `<span class="text-amber-400 font-bold text-sm">${name.charAt(0).toUpperCase()}</span>`;
+            parent.className = `${size} rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center flex-shrink-0`;
+          }
+        }}
       />
     );
   }
@@ -145,6 +155,7 @@ const Products: React.FC = () => {
   };
 
   const handleSave = () => {
+    console.log("Image file:", form.imageFile);
     if (!form.name || !form.price || form.stock === "" || !form.category || !form.description) {
       alert("Please fill in name, price, stock, category and description");
       return;
@@ -163,6 +174,11 @@ const Products: React.FC = () => {
     }
 
     if (modal === "add") {
+      console.log("========== FORMDATA ==========");
+
+      for (const pair of formData.entries()) {
+        console.log(pair[0], pair[1]);
+      }
       dispatch(addProduct(formData));
     } else if (modal === "edit" && form.id) {
       dispatch(updateProduct(form.id, formData));

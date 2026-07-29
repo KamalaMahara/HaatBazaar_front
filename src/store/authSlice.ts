@@ -62,7 +62,7 @@ export default authSlice.reducer;
 export function registerUser(data: IUser) {
   return async function registerUserThunk(dispatch: AppDispatch) {
     try {
-      const response = await API.post("register", data);
+      const response = await API.post("/register", data);
       console.log(response);
       if (response.status === 201) {
         dispatch(setStatus(Status.SUCCESS));
@@ -94,7 +94,8 @@ export function loginUser(data: ILoginUser) {
             username: response.data.username || "",
             email: data.email,
             token: response.data.token,
-            role: response.data.role || "customer",
+            role: response.data.role,
+
           }));
         } else {
           dispatch(setStatus(Status.ERROR));
