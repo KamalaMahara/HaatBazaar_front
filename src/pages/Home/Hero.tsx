@@ -5,19 +5,19 @@ import { Link } from 'react-router';
 
 const Hero: React.FC = () => {
   return (
-    <section className="relative min-h-[90vh] bg-[#111827] text-[#F9FAFB] flex flex-col justify-center overflow-hidden pt-20 px-4">
+    <section className="relative min-h-[90vh] bg-[#111827] text-[#F9FAFB] flex flex-col justify-center overflow-hidden pt-20 px-4 ">
 
       {/* Background Radial Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#F59E0B]/10 via-transparent to-transparent opacity-50 pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div className="max-w-7xl mx-auto mt-4w-full grid grid-cols-1 lg:grid-cols-12 gap-20 items-start">
 
         {/* Left: Content (5 Columns) */}
         <div className="lg:col-span-5 z-10 flex flex-col justify-center h-full">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 w-fit mb-8 backdrop-blur-md">
-            <div className="w-2 h-2 rounded-full bg-[#F59E0B] animate-pulse" />
-            <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400">Elegance in Every Selection.</span>
-          </div>
+
+
+          <img className=" h-60 w-70  rounded-lg bg-[#111827] mx-6 mb-6 " src="../hero.png" alt="Elegance in Every Selection. " />
+
 
           <h1 className="text-[clamp(3rem,8vw,5.5rem)] font-black leading-[0.85] tracking-tighter mb-8 uppercase italic">
             SHOP YOUR <br />
