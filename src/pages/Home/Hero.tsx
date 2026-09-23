@@ -16,7 +16,7 @@ const Hero: React.FC = () => {
         <div className="lg:col-span-5 z-10 flex flex-col justify-center h-full">
 
 
-          <img className=" h-60 w-70  rounded-lg bg-[#111827] mx-6 mb-6 " src="../hero.png" alt="Elegance in Every Selection. " />
+          <img className=" h-60 w-70  rounded-lg bg-[#111827] mx-6 mb-6  " src="../hero.png" alt="Elegance in Every Selection.  " />
 
 
           <h1 className="text-[clamp(3rem,8vw,5.5rem)] font-black leading-[0.85] tracking-tighter mb-8 uppercase italic">
