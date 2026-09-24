@@ -8,6 +8,7 @@ const initialState: IOrder = {
   status: Status.LOADING,
   items: [],
   khaltiUrl: null,
+  esewaFormData: null,
 };
 
 const orderSlice = createSlice({
@@ -19,6 +20,10 @@ const orderSlice = createSlice({
     },
     setStatus(state: IOrder, action: PayloadAction<Status>) {
       state.status = action.payload;
+    },
+    
+    setEsewaFormData(state: IOrder, action: PayloadAction<any>) {
+      state.esewaFormData = action.payload;
     },
     setKhaltiUrl(state: IOrder, action: PayloadAction<string>) {
       state.khaltiUrl = action.payload;
@@ -41,7 +46,7 @@ const orderSlice = createSlice({
 export default orderSlice.reducer;
 
 
-export const { setItems, setStatus, setKhaltiUrl, updateOrderStatusToCancel } =
+export const { setItems, setStatus, setKhaltiUrl, setEsewaFormData, updateOrderStatusToCancel } =
   orderSlice.actions;
 
 export function orderItem(data: IData) {
@@ -51,6 +56,10 @@ export function orderItem(data: IData) {
       if (response.status === 200) {
         dispatch(setStatus(Status.SUCCESS));
         dispatch(setItems(response.data.data));
+        
+        if (response.data.esewaFormData) {
+          dispatch(setEsewaFormData(response.data.esewaFormData));
+        }
         if (response.data.url) {
           dispatch(setKhaltiUrl(response.data.url));
         }

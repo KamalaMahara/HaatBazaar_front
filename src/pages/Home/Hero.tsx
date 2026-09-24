@@ -30,7 +30,7 @@ const Hero: React.FC = () => {
 
           <div className="flex gap-4">
             <Link
-              to="/login"
+              to="/products"
               className="h-16 px-10 bg-[#F59E0B] text-[#111827] font-black rounded-full flex items-center gap-3 hover:scale-105 transition-transform active:scale-95"
             >
               BUY NOW <ShoppingCart size={20} />

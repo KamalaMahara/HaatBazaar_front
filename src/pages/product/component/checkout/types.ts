@@ -20,10 +20,26 @@ export interface IOrderItems extends IProduct {
 
 }
 
+
+export interface IEsewaFormData {
+  amount: number;
+  tax_amount: number;
+  total_amount: number;
+  transaction_uuid: string;
+  product_code: string;
+  product_service_charge: number;
+  product_delivery_charge: number;
+  success_url: string;
+  failure_url: string;
+  signed_field_names: string;
+  signature: string;
+}
+
 export interface IOrder {
   status: Status,
   items: IOrderItems[],
-  khaltiUrl: string | null
+  khaltiUrl: string | null,
+  esewaFormData: IEsewaFormData | null
 
 }
 

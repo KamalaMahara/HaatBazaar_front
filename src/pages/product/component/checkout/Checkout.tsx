@@ -23,6 +23,7 @@ const Checkout: React.FC = () => {
   const dispatch = useAppDispatch();
   const { items } = useAppSelector((store) => store.cart);
   const khaltiUrl = useAppSelector((store) => store.orders.khaltiUrl);
+  const esewaFormData = useAppSelector((store) => store.orders.esewaFormData);
   const formRef = useRef<HTMLFormElement>(null);
 
   const [paymentType, setPaymentType] = useState<PaymentMethod>(PaymentMethod.Cod);
@@ -102,6 +103,26 @@ const Checkout: React.FC = () => {
       window.location.href = khaltiUrl;
     }
   }, [paymentType, khaltiUrl]);
+
+  
+  useEffect(() => {
+    if (paymentType === PaymentMethod.Esewa && esewaFormData) {
+      const form = document.createElement("form");
+      form.setAttribute("method", "POST");
+      form.setAttribute("action", "https://rc-epay.esewa.com.np/api/epay/main/v2/form");
+      
+      for (const key in esewaFormData) {
+        const hiddenField = document.createElement("input");
+        hiddenField.setAttribute("type", "hidden");
+        hiddenField.setAttribute("name", key);
+        hiddenField.setAttribute("value", (esewaFormData as any)[key]);
+        form.appendChild(hiddenField);
+      }
+      
+      document.body.appendChild(form);
+      form.submit();
+    }
+  }, [paymentType, esewaFormData]);
 
   return (
     <>

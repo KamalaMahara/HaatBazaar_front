@@ -2,12 +2,35 @@ import React from 'react';
 import { ShoppingBag, Star } from 'lucide-react';
 import type { IProduct } from '../types/types';
 import { Link } from 'react-router';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { addToCart } from '../../../store/cartSlice';
 
 interface ICardProps {
   product: IProduct;
 }
 
 const ProductCard: React.FC<ICardProps> = ({ product }) => {
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((store) => store.auth);
+  // const navigate = useNavigate();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigating to single product page
+
+    if (!user.token) {
+      alert("Please login first to add products to your cart.");
+      // Optional: navigate('/login');
+      return;
+    }
+    if (user.role !== "customer") {
+      alert("Not allowed to buy. Only customers can add products to cart.");
+      return;
+    }
+
+    dispatch(addToCart(product.id));
+    alert("Successfully added to cart!");
+  };
+
   return (
     <Link to={`/products/${product.id}`}>
       <div className="group flex flex-col bg-transparent">
@@ -47,7 +70,10 @@ const ProductCard: React.FC<ICardProps> = ({ product }) => {
           {/* Hover Add Button */}
           {product.productTotalStock > 0 && (
             <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <button className="w-full h-12 bg-[#F59E0B] text-[#111827] font-bold text-sm rounded-xl shadow-xl flex items-center justify-center gap-2 hover:bg-[#F9FAFB] transition-colors">
+              <button
+                onClick={handleAddToCart}
+                className="w-full h-12 bg-[#F59E0B] text-[#111827] font-bold text-sm rounded-xl shadow-xl flex items-center justify-center gap-2 hover:bg-[#F9FAFB] transition-colors"
+              >
                 <ShoppingBag size={16} /> Add to Cart
               </button>
             </div>

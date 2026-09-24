@@ -82,6 +82,7 @@ const SingleProduct = () => {
   const [toastVisible, setToastVisible] = useState(false);
 
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector((store) => store.auth);
 
   useEffect(() => {
     if (id) {
@@ -90,6 +91,15 @@ const SingleProduct = () => {
   }, [id, dispatch]); // Added missing dependencies
 
   const handleAddToCart = () => {
+    if (!user.token) {
+      alert("Please login first to add products to your cart.");
+      return;
+    }
+    if (user.role !== "customer") {
+      alert("Not allowed to buy. Only customers can add products to cart.");
+      return;
+    }
+
     if (id) {
       dispatch(addToCart(id));
       setToastVisible(true);

@@ -18,6 +18,10 @@ import Profile from "./pages/user/Profile"
 
 import AdminDashboard from "./pages/Admin/AdminDashboard"
 
+import EsewaSuccess from "./pages/esewa/EsewaSuccess";
+import EsewaFailure from "./pages/esewa/EsewaFailure";
+
+
 
 
 
@@ -45,6 +49,9 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/my-orders/:id" element={<MyOrderDetail />} />
           <Route path="/admin" element={<AdminDashboard />} />
+
+          <Route path="/esewa-success" element={<EsewaSuccess />} />
+          <Route path="/esewa-failure" element={<EsewaFailure />} />
 
         </Routes>
       </BrowserRouter>
